@@ -1,0 +1,42 @@
+{
+  "meta": {
+    "generator": "edge-tts",
+    "voice": "en-US-JennyNeural",
+    "rate": "+0%",
+    "pitch": "+0Hz",
+    "volume": "+0%",
+    "created_at": "2026-03-15T11:15:56.603961+00:00"
+  },
+  "items": {
+    "1": {
+      "topic": "assets/audio/1/topic.mp3",
+      "simple": "assets/audio/1/simple.mp3",
+      "advanced": "assets/audio/1/advanced.mp3"
+    },
+    "2": {
+      "topic": "assets/audio/2/topic.mp3",
+      "simple": "assets/audio/2/simple.mp3",
+      "advanced": "assets/audio/2/advanced.mp3"
+    },
+    "3": {
+      "topic": "assets/audio/3/topic.mp3",
+      "simple": "assets/audio/3/simple.mp3",
+      "advanced": "assets/audio/3/advanced.mp3"
+    },
+    "4": {
+      "topic": "assets/audio/4/topic.mp3",
+      "simple": "assets/audio/4/simple.mp3",
+      "advanced": "assets/audio/4/advanced.mp3"
+    },
+    "5": {
+      "topic": "assets/audio/5/topic.mp3",
+      "simple": "assets/audio/5/simple.mp3",
+      "advanced": "assets/audio/5/advanced.mp3"
+    },
+    "6": {
+      "topic": "assets/audio/6/topic.mp3",
+      "simple": "assets/audio/6/simple.mp3",
+      "advanced": "assets/audio/6/advanced.mp3"
+    }
+  }
+}

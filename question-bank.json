@@ -1,0 +1,56 @@
+[
+  {
+    "id": 1,
+    "topic_en": "Describe a memorable event from your childhood.",
+    "topic_cn": "描述一个你童年难忘的事件。",
+    "simple_en": "One memorable event was my first school speech contest. I was nervous, but I finished my speech and won third prize.",
+    "simple_cn": "我最难忘的一件事是第一次参加学校演讲比赛。我当时很紧张，但我完成了演讲并获得了第三名。",
+    "advanced_en": "A defining childhood memory for me was a speech contest in primary school. Although I was trembling on stage, the experience taught me how to stay composed under pressure and sparked my interest in public speaking.",
+    "advanced_cn": "对我而言，童年最有代表性的记忆是小学的一次演讲比赛。虽然我在台上紧张到发抖，但这次经历让我学会了在压力下保持镇定，也激发了我对公众表达的兴趣。"
+  },
+  {
+    "id": 2,
+    "topic_en": "Describe a person who has influenced you the most.",
+    "topic_cn": "描述一个对你影响最大的人。",
+    "simple_en": "The person who influenced me most is my mother. She is hardworking and patient, and she always encourages me to keep learning.",
+    "simple_cn": "对我影响最大的人是我的妈妈。她勤奋又有耐心，并且总是鼓励我持续学习。",
+    "advanced_en": "The person who has shaped me the most is my mother. Her discipline and emotional resilience have deeply influenced my attitude toward setbacks, and she has shown me that consistency is more powerful than talent alone.",
+    "advanced_cn": "最塑造我的人是我的母亲。她的自律与情绪韧性深刻影响了我面对挫折的态度，也让我明白持续努力往往比天赋更重要。"
+  },
+  {
+    "id": 3,
+    "topic_en": "Describe a place in your city that you enjoy visiting.",
+    "topic_cn": "描述你所在城市中你喜欢去的一个地方。",
+    "simple_en": "I enjoy visiting a small riverside park near my home. It is quiet, full of trees, and perfect for walking after dinner.",
+    "simple_cn": "我喜欢去家附近的一个小河边公园。那里很安静，树很多，很适合晚饭后散步。",
+    "advanced_en": "A place I frequently visit is a riverside park in my city center. Beyond its natural scenery, it offers me a mental reset after busy days, and I often use that time to reflect and recharge.",
+    "advanced_cn": "我经常去的地方是市中心的河畔公园。除了景色优美之外，它还能让我在忙碌之后获得心理放松，我常在那段时间里反思并恢复精力。"
+  },
+  {
+    "id": 4,
+    "topic_en": "Describe a useful skill you want to learn.",
+    "topic_cn": "描述一项你想学习的实用技能。",
+    "simple_en": "I want to learn public speaking. It can help me express ideas clearly and become more confident in interviews.",
+    "simple_cn": "我想学习公众演讲。这能帮助我更清晰地表达观点，也能让我在面试中更自信。",
+    "advanced_en": "A practical skill I want to master is public speaking. Strong communication not only improves academic and professional performance, but also helps build trust and leadership in team environments.",
+    "advanced_cn": "我想掌握的一项实用技能是公众演讲。优秀的表达能力不仅能提升学习和工作表现，也能在团队中建立信任与领导力。"
+  },
+  {
+    "id": 5,
+    "topic_en": "Describe a book that left a deep impression on you.",
+    "topic_cn": "描述一本给你留下深刻印象的书。",
+    "simple_en": "A book that impressed me is Atomic Habits. It taught me that small daily changes can create big long-term results.",
+    "simple_cn": "让我印象深刻的一本书是《掌控习惯》。它让我明白每天微小的改变也能带来长期的大成果。",
+    "advanced_en": "One book that deeply influenced me is Atomic Habits. Its core message about systems over goals changed how I manage my time and habits, making my progress far more sustainable.",
+    "advanced_cn": "《掌控习惯》是一本深刻影响我的书。它强调“系统重于目标”的理念，改变了我管理时间和习惯的方式，让我的进步更加可持续。"
+  },
+  {
+    "id": 6,
+    "topic_en": "Describe a challenge you faced and how you overcame it.",
+    "topic_cn": "描述你曾面对的一个挑战，以及你如何克服它。",
+    "simple_en": "One challenge I faced was balancing study and part-time work. I made a weekly plan and followed it strictly, so I finally handled both well.",
+    "simple_cn": "我曾面对的一个挑战是平衡学习和兼职。我制定了每周计划并严格执行，最终把两者都处理得很好。",
+    "advanced_en": "A major challenge I encountered was balancing academic pressure with part-time responsibilities. By prioritizing tasks and tracking my weekly goals, I gradually built a stable routine and improved both efficiency and confidence.",
+    "advanced_cn": "我遇到的一大挑战是在学业压力和兼职责任之间找到平衡。通过任务优先级管理和每周目标追踪，我逐步建立了稳定节奏，并同时提升了效率与自信。"
+  }
+]

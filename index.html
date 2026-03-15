@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>雅思口语练习 - 起始页</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;800&family=Noto+Serif+SC:wght@600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&family=Sora:wght@600;700;800&display=swap");
+
+    :root {
+      --bg: #eceef1;
+      --card: #f8f8fa;
+      --text: #2f3338;
+      --muted: #8f949c;
+      --accent: #4950d0;
+      --accent-soft: #dbe0ff;
+      --next-start: #667eea;
+      --next-end: #7c4fbc;
+      --shadow: 0 16px 45px rgba(79, 85, 120, 0.16);
+      --radius-card: 34px;
+      --radius-pill: 999px;
+      --font-ui: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", sans-serif;
+      --font-display: "Plus Jakarta Sans", "Sora", "Noto Sans SC", sans-serif;
+      --font-cn-elegant: "Noto Serif SC", "Songti SC", "STSong", serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: clamp(12px, 2.2vw, 34px) clamp(10px, 2vw, 20px) clamp(14px, 2.2vw, 24px);
+      font-family: var(--font-ui);
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 8% 12%, rgba(145, 153, 255, 0.14), transparent 35%),
+        radial-gradient(circle at 90% 78%, rgba(141, 105, 210, 0.13), transparent 30%),
+        var(--bg);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .app {
+      width: min(860px, calc(100% - 8px));
+      margin-top: clamp(8px, 3vh, 30px);
+      animation: enter-page 420ms ease-out;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius-card);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+      padding: clamp(20px, 2.8vw, 36px) clamp(16px, 3.2vw, 42px) clamp(20px, 2.8vw, 30px);
+    }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: clamp(1.05rem, 0.8vw + 0.9rem, 1.45rem);
+      color: var(--muted);
+      font-weight: 500;
+      line-height: 1;
+      gap: 10px;
+    }
+
+    .top .title {
+      font-family: var(--font-ui);
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .top .remaining {
+      white-space: nowrap;
+      font-family: var(--font-ui);
+      font-size: clamp(0.96rem, 0.6vw + 0.86rem, 1.22rem);
+      font-weight: 500;
+    }
+
+    .stage {
+      min-height: clamp(220px, 36vh, 340px);
+      padding: clamp(14px, 2vw, 24px) clamp(4px, 1vw, 12px) clamp(14px, 2vw, 24px);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(12px, 2.2vw, 24px);
+    }
+
+    .question-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-pill);
+      background: var(--accent-soft);
+      color: var(--accent);
+      min-height: clamp(32px, 4.8vw, 50px);
+      min-width: clamp(130px, 28vw, 210px);
+      padding: 4px clamp(14px, 2.2vw, 22px);
+      font-family: var(--font-display);
+      font-size: clamp(0.94rem, 0.76vw + 0.86rem, 1.34rem);
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+
+    .waiting-sub {
+      color: #5e64eb;
+      font-family: var(--font-cn-elegant);
+      font-size: clamp(1.26rem, 2.2vw, 2.2rem);
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: 0.01em;
+    }
+
+    .btn-next {
+      margin-top: clamp(22px, 2.8vw, 32px);
+      width: 100%;
+      height: clamp(56px, 7.2vw, 84px);
+      border: 0;
+      border-radius: var(--radius-pill);
+      color: #fff;
+      font-size: clamp(1rem, 0.72vw + 0.9rem, 1.26rem);
+      font-weight: 800;
+      font-family: var(--font-display);
+      background: linear-gradient(95deg, var(--next-start), var(--next-end));
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
+
+    .btn-next:hover {
+      transform: translateY(-1px);
+      filter: saturate(1.08);
+    }
+
+    .footer {
+      margin: 26px 0 0;
+      text-align: center;
+      color: #a5a8ad;
+      font-size: clamp(0.86rem, 0.62vw + 0.74rem, 1.12rem);
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    .footer a {
+      color: inherit;
+      text-decoration: none;
+      border-bottom: 2px solid rgba(165, 168, 173, 0.55);
+    }
+
+    @keyframes enter-page {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 860px) {
+      body {
+        padding: 16px 10px 20px;
+      }
+
+      .card {
+        padding: 16px 12px 14px;
+        border-radius: 22px;
+      }
+
+      .top {
+        font-size: 0.98rem;
+      }
+
+      .top .remaining {
+        font-size: 0.9rem;
+      }
+
+      .stage {
+        min-height: 180px;
+        padding: 12px 2px 12px;
+      }
+
+      .question-pill {
+        min-height: 36px;
+        min-width: 132px;
+        font-size: 0.95rem;
+        padding: 4px 14px;
+      }
+
+      .waiting-sub {
+        font-size: 1.34rem;
+      }
+
+      .btn-next {
+        height: 52px;
+        font-size: 1rem;
+      }
+
+      .footer {
+        margin-top: 20px;
+        font-size: 0.82rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section class="card">
+      <header class="top">
+        <div class="title">雅思口语练习</div>
+        <div class="remaining" id="remaining">剩余未抽：--题</div>
+      </header>
+
+      <div class="stage">
+        <div class="question-pill">Waiting...</div>
+        <div class="waiting-sub">✨ 准备好了请开始</div>
+      </div>
+    </section>
+
+    <button class="btn-next" id="btnStart" type="button">🎲 随机抽取并开始</button>
+
+    <footer class="footer">
+      © <a href="#" aria-label="cici雅思资料库">cici雅思资料库</a> | 雅思口语高分上岸
+    </footer>
+  </div>
+
+  <script>
+    const QUESTION_BANK_PATH = "./question-bank.json";
+    const remainingEl = document.getElementById("remaining");
+    const btnStart = document.getElementById("btnStart");
+
+    async function updateTotalQuestions() {
+      try {
+        const response = await fetch(QUESTION_BANK_PATH, { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        const data = await response.json();
+        const total = Array.isArray(data) ? data.length : 0;
+        remainingEl.textContent = `剩余未抽：${total}题`;
+      } catch (error) {
+        console.error("Failed to load question bank summary:", error);
+        remainingEl.textContent = "剩余未抽：--题";
+      }
+    }
+
+    btnStart.addEventListener("click", () => {
+      window.location.href = "./practice.html?autostart=1";
+    });
+
+    updateTotalQuestions();
+  </script>
+</body>
+</html>
