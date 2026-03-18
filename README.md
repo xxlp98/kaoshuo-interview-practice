@@ -5,7 +5,7 @@
 ## 页面结构
 
 - `index.html`：起始页。首次点击“抽取话题并开始”后跳转到练习页。
-- `practice.html`：练习页。支持 Part 1/2/3 左侧切换、话题优先抽取、查看题目、语速控制、历史侧边栏。
+- `practice.html`：练习页。支持 Part 1/2/3 左侧切换、话题优先抽取、查看题目、查看答案、语速控制、历史侧边栏。
 
 说明：右侧练习记录按 Part 独立保存。切换 Part 后，会自动切到该 Part 自己的抽题进度和历史记录。
 
@@ -19,9 +19,16 @@
 4. 当该话题问题全部抽完，会弹窗提示并自动切换到下一个话题。
 5. 当某个 Part 的全部话题都抽完，会自动重置该 Part 的话题池。
 
+## 查看题目与答案
+
+1. 抽到题目后，先点击“查看题目”。
+2. 题目显示后，再点击“用口语回答”显示两套参考答案（简单版 / 精华版）。
+3. 可分别点击答案卡片上的“朗读”按钮练习跟读。
+
 ## Edge-TTS 离线音频（默认优先）
 
-`practice.html` 会优先读取本地生成音频（`audio-manifest.json` + `assets/audio/**/*.mp3`），若缺失再回退浏览器 TTS。
+`practice.html` 会读取 `question-bank.json`（问题）和 `answer-bank.json`（答案）。
+语音播放会优先读取本地生成音频（`audio-manifest.json` + `assets/audio/**/*.mp3`），若缺失再回退浏览器 TTS。
 
 ### 1. 安装依赖
 
@@ -109,7 +116,7 @@ git log --oneline -n 5
 ### 方式 1：Netlify Drop（最快）
 
 1. 打开 https://app.netlify.com/drop
-2. 把整个项目文件夹拖进去（至少包含 `index.html`、`practice.html`、`question-bank.json`、`audio-manifest.json`、`assets/audio/`）
+2. 把整个项目文件夹拖进去（至少包含 `index.html`、`practice.html`、`question-bank.json`、`answer-bank.json`、`audio-manifest.json`、`assets/audio/`）
 3. 上传完成后会自动生成公网网址，直接分享该网址
 
 ### 方式 2：GitHub + Netlify（推荐长期维护）
@@ -125,9 +132,10 @@ https://app.netlify.com/projects/silly-paletas-ae94b7/deploys/69b69c18dce2ee85eb
 
 ## 题库维护
 
-- 题库文件：`question-bank.json`（由 `practice.html` 读取）
-- 音频清单：`audio-manifest.json`（由 `practice.html` 读取）
-- 每道题格式字段（当前话题优先版本）：
+- 问题库：`question-bank.json`（由 `practice.html` 读取）
+- 答案库：`answer-bank.json`（由 `practice.html` 读取）
+- 音频清单：`audio-manifest.json`
+- `question-bank.json` 每道题字段（话题优先）：
   - `id`
   - `part`（`part1` / `part2` / `part3`）
   - `topic_id`（同一话题内问题共享）
@@ -137,8 +145,15 @@ https://app.netlify.com/projects/silly-paletas-ae94b7/deploys/69b69c18dce2ee85eb
   - `order`（话题内问题顺序，Q1 建议设为 1）
   - `question_en`
   - `question_cn`
+- `answer-bank.json` 每道题字段：
+  - `id`（与问题库对应）
+  - `simple_en`
+  - `simple_cn`
+  - `advanced_en`
+  - `advanced_cn`
 
 注意：
 - `id` 建议全局唯一且不重复。
 - 同一话题请保持相同 `topic_id`。
 - 若希望“先问第一题”，请确保每个话题至少有一条 `order = 1` 的问题。
+- 答案库中每条答案的 `id` 必须和问题库中的题目 `id` 对应。

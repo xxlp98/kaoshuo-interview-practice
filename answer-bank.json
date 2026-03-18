@@ -1,0 +1,233 @@
+[
+  {
+    "id": 1001,
+    "simple_en": "I live in Hangzhou and I like this area because it is clean, convenient, and close to public transport.",
+    "simple_cn": "我住在杭州，我喜欢这个区域，因为这里干净、方便，而且离公共交通很近。",
+    "advanced_en": "I currently live in Hangzhou, and what I value most is the balance between convenience and comfort. Daily facilities are nearby, but the neighborhood still feels calm and livable.",
+    "advanced_cn": "我目前住在杭州，我最看重的是便利和舒适之间的平衡。日常设施都在附近，但社区依然安静宜居。"
+  },
+  {
+    "id": 1002,
+    "simple_en": "Recently, there are more subway stations and better roads, so commuting is easier than before.",
+    "simple_cn": "最近地铁站更多、道路更好，所以通勤比以前轻松。",
+    "advanced_en": "My area has changed quite a lot in recent years, especially in transportation and public services. These upgrades have made everyday life noticeably more efficient.",
+    "advanced_cn": "这几年我住的地方变化很大，尤其是交通和公共服务。这些升级让日常生活效率明显提高。"
+  },
+  {
+    "id": 1003,
+    "simple_en": "Yes, I know several neighbors and classmates who live nearby, and we often greet each other.",
+    "simple_cn": "是的，我认识几个住在附近的邻居和同学，我们经常打招呼。",
+    "advanced_en": "Yes, I have a small social circle in this neighborhood. Knowing people around me gives me a stronger sense of belonging and safety.",
+    "advanced_cn": "是的，我在这个社区有一个小社交圈。认识周围的人会让我更有归属感和安全感。"
+  },
+  {
+    "id": 1004,
+    "simple_en": "I like going to a riverside park near my home because it is quiet and relaxing.",
+    "simple_cn": "我喜欢去家附近的河边公园，因为那里安静又放松。",
+    "advanced_en": "I usually go to the riverside park in my area. It gives me a mental break after busy days and helps me reset my mood.",
+    "advanced_cn": "我通常会去住处附近的河滨公园。忙完一天后，它能让我放松下来，也能调整心情。"
+  },
+  {
+    "id": 1005,
+    "simple_en": "I love the green streets and local food stores the most.",
+    "simple_cn": "我最喜欢的是绿化街道和本地小吃店。",
+    "advanced_en": "What I enjoy most is the community vibe. The combination of greenery, local shops, and friendly people gives the place real character.",
+    "advanced_cn": "我最享受的是社区氛围。绿化、街边小店和友善的人，让这个地方很有特色。"
+  },
+  {
+    "id": 1006,
+    "simple_en": "Yes, I would like to try living in a city with a very different climate, like a coastal city.",
+    "simple_cn": "是的，我想尝试住在气候很不一样的城市，比如海边城市。",
+    "advanced_en": "I am open to living somewhere with completely different environmental conditions because new surroundings usually broaden my perspective and lifestyle.",
+    "advanced_cn": "我愿意住到环境条件完全不同的地方，因为新的环境通常能拓宽我的视野和生活方式。"
+  },
+  {
+    "id": 1101,
+    "simple_en": "My hometown is in Zhejiang, and it is a medium-sized city.",
+    "simple_cn": "我的家乡在浙江，是一座中等规模的城市。",
+    "advanced_en": "My hometown is a mid-sized city in Zhejiang. It has enough urban convenience while still keeping a relatively relaxed pace of life.",
+    "advanced_cn": "我的家乡在浙江，是一座中型城市。它既有城市生活的便利，又保留了相对从容的生活节奏。"
+  },
+  {
+    "id": 1102,
+    "simple_en": "I lived there for around eighteen years before moving for university.",
+    "simple_cn": "在上大学前，我在那里住了大约十八年。",
+    "advanced_en": "I spent most of my childhood and teenage years there, so it has deeply shaped my habits and values.",
+    "advanced_cn": "我的童年和青少年时期基本都在那里度过，所以它深刻影响了我的习惯和价值观。"
+  },
+  {
+    "id": 1103,
+    "simple_en": "I like the local food and friendly people the most.",
+    "simple_cn": "我最喜欢家乡的美食和友好的人们。",
+    "advanced_en": "The best part of my hometown is its warmth. The food culture is rich, and people are generally kind and easy to connect with.",
+    "advanced_cn": "家乡最吸引我的是它的温度。饮食文化很丰富，人也普遍热情、容易相处。"
+  },
+  {
+    "id": 1104,
+    "simple_en": "One thing I dislike is traffic during rush hour.",
+    "simple_cn": "我不太喜欢的一点是高峰期交通拥堵。",
+    "advanced_en": "If I had to mention a downside, it would be congestion during peak hours. As the city grows, commuting efficiency has become a challenge.",
+    "advanced_cn": "如果要说缺点，那就是高峰时段会比较堵。随着城市发展，通勤效率成了一个挑战。"
+  },
+  {
+    "id": 1105,
+    "simple_en": "Yes, I know some basic history, including local industries and famous sites.",
+    "simple_cn": "是的，我了解一些基础历史，包括本地产业和著名景点。",
+    "advanced_en": "I know the general historical background of my hometown, such as its development path and key cultural landmarks.",
+    "advanced_cn": "我了解家乡大致的历史背景，比如它的发展路径和一些重要的文化地标。"
+  },
+  {
+    "id": 1106,
+    "simple_en": "Yes, I want to learn more, and my school also taught some local history.",
+    "simple_cn": "是的，我想了解更多，学校也教过一些本地历史。",
+    "advanced_en": "Definitely. Learning local history helps me understand my roots, and schools should include it because it builds cultural identity.",
+    "advanced_cn": "当然。学习本地历史能帮助我理解自己的根源，学校也应该教授这些内容，因为这有助于建立文化认同。"
+  },
+  {
+    "id": 1107,
+    "simple_en": "My hometown is most famous for its food and old streets.",
+    "simple_cn": "我的家乡最有名的是美食和老街。",
+    "advanced_en": "It is best known for cultural tourism, especially historical neighborhoods, local cuisine, and a distinct regional style.",
+    "advanced_cn": "家乡最出名的是文化旅游，尤其是历史街区、本地饮食和鲜明的地域风格。"
+  },
+  {
+    "id": 1201,
+    "simple_en": "I live in an apartment because it is practical and convenient.",
+    "simple_cn": "我住在公寓里，因为它实用又方便。",
+    "advanced_en": "I currently live in an apartment, mainly because it is efficient for city life and close to transport and daily services.",
+    "advanced_cn": "我现在住在公寓，主要因为它更适合城市生活，而且离交通和日常服务都很近。"
+  },
+  {
+    "id": 1202,
+    "simple_en": "My favorite room is my bedroom because it is quiet and comfortable.",
+    "simple_cn": "我最喜欢的房间是卧室，因为安静又舒服。",
+    "advanced_en": "My bedroom is my favorite space since it is where I can both focus and recharge. I designed it to be simple and functional.",
+    "advanced_cn": "卧室是我最喜欢的空间，因为我既能在这里专注，也能在这里放松。我把它布置得简洁而实用。"
+  },
+  {
+    "id": 1203,
+    "simple_en": "Better lighting and more storage would make my home more comfortable.",
+    "simple_cn": "更好的采光和更多收纳会让我家更舒适。",
+    "advanced_en": "To make my home more comfortable, I would improve lighting and organization. A well-designed space makes both work and rest easier.",
+    "advanced_cn": "如果想让家里更舒服，我会改善采光和收纳。一个设计合理的空间会让工作和休息都更轻松。"
+  },
+  {
+    "id": 1204,
+    "simple_en": "I have lived there for about two years.",
+    "simple_cn": "我在那里住了大约两年。",
+    "advanced_en": "I have lived there for around two years, which is long enough for me to build routines and feel settled in the neighborhood.",
+    "advanced_cn": "我在那里住了差不多两年，时间已经足够让我形成稳定的生活节奏，也更适应这个社区。"
+  },
+  {
+    "id": 1205,
+    "simple_en": "I live with others, which helps reduce costs and feels less lonely.",
+    "simple_cn": "我和别人合住，这样能降低开销，也不会太孤单。",
+    "advanced_en": "At the moment I share my accommodation. It is cost-effective and also creates a more social and lively living environment.",
+    "advanced_cn": "目前我是合租。这样更省钱，也能让居住环境更有社交感和生活气息。"
+  },
+  {
+    "id": 1206,
+    "simple_en": "Yes, I plan to stay there for a few more years.",
+    "simple_cn": "是的，我打算再住几年。",
+    "advanced_en": "In the short term, I plan to keep living there because the location, rent, and facilities all match my current needs.",
+    "advanced_cn": "短期内我会继续住在那里，因为位置、房租和配套都符合我目前的需求。"
+  },
+  {
+    "id": 1207,
+    "simple_en": "I want to improve my study and work area at home.",
+    "simple_cn": "我想改善家里的学习和工作区域。",
+    "advanced_en": "If I could change one thing, I would upgrade my workspace with better ergonomics, because that would improve both comfort and productivity.",
+    "advanced_cn": "如果只能改一件事，我会升级我的工作区并改善人体工学，这样能同时提升舒适度和效率。"
+  },
+  {
+    "id": 1301,
+    "simple_en": "My major is finance, and I chose it because I am interested in business.",
+    "simple_cn": "我的专业是金融，我选择它是因为我对商业感兴趣。",
+    "advanced_en": "I major in finance because it combines analytical thinking with practical application and offers diverse long-term career options.",
+    "advanced_cn": "我学金融，因为这个专业结合了分析思维和实际应用，而且长期职业选择很多。"
+  },
+  {
+    "id": 1302,
+    "simple_en": "It is about investment, risk, and money management. I like it because it is practical.",
+    "simple_cn": "这个专业主要是投资、风险和资金管理。我喜欢它，因为很实用。",
+    "advanced_en": "The major covers areas like investment, corporate finance, and risk analysis. I like it because theory can be applied directly to real decisions.",
+    "advanced_cn": "这个专业涵盖投资、公司金融和风险分析等内容。我喜欢它，因为理论可以直接用于现实决策。"
+  },
+  {
+    "id": 1303,
+    "simple_en": "Yes, it can be difficult, especially quantitative courses.",
+    "simple_cn": "是的，它有时挺难的，尤其是定量课程。",
+    "advanced_en": "It is challenging, particularly when courses involve data models and statistics, but regular review makes it manageable.",
+    "advanced_cn": "这个专业确实有挑战，特别是涉及数据模型和统计的课程，但只要持续复习就能应对。"
+  },
+  {
+    "id": 1304,
+    "simple_en": "After class, I usually review notes, do assignments, and study in the library.",
+    "simple_cn": "下课后我通常会复习笔记、做作业，并在图书馆学习。",
+    "advanced_en": "After classes, I focus on consolidation by reviewing key points, finishing assignments, and discussing difficult topics with classmates.",
+    "advanced_cn": "课后我会重点做巩固，比如复习关键内容、完成作业，并和同学讨论难点。"
+  },
+  {
+    "id": 1305,
+    "simple_en": "I prefer studying in the morning because my mind is fresher.",
+    "simple_cn": "我更喜欢早上学习，因为那时头脑更清醒。",
+    "advanced_en": "I prefer morning study sessions because my concentration is strongest early in the day, especially for difficult tasks.",
+    "advanced_cn": "我偏好早晨学习，因为那时专注度最高，尤其适合处理难度较大的任务。"
+  },
+  {
+    "id": 1306,
+    "simple_en": "Yes, I am looking forward to working and applying what I learned.",
+    "simple_cn": "是的，我很期待工作并把学到的东西用起来。",
+    "advanced_en": "Yes, I look forward to working because I want to test my knowledge in real settings and gain hands-on professional experience.",
+    "advanced_cn": "是的，我期待工作，因为我想在真实场景中检验所学，并积累实践经验。"
+  },
+  {
+    "id": 1307,
+    "simple_en": "Sometimes yes, especially during exam season.",
+    "simple_cn": "有时会，尤其在考试季。",
+    "advanced_en": "Yes, there are times when academic pressure feels overwhelming, but planning and regular breaks help me keep balance.",
+    "advanced_cn": "会的，学业压力有时会很大，尤其在高强度阶段。不过通过计划安排和规律休息，我能保持平衡。"
+  },
+  {
+    "id": 1401,
+    "simple_en": "I work as a marketing assistant.",
+    "simple_cn": "我的工作是市场营销助理。",
+    "advanced_en": "I work as a marketing assistant, mainly supporting campaigns, data analysis, and cross-team coordination.",
+    "advanced_cn": "我目前的职位是市场营销助理，主要负责活动支持、数据分析和跨团队协作。"
+  },
+  {
+    "id": 1402,
+    "simple_en": "I chose this work because I enjoy communication and creativity.",
+    "simple_cn": "我选择这份工作是因为我喜欢沟通和创意。",
+    "advanced_en": "I chose this type of work because it blends creativity and strategy, which matches both my interests and strengths.",
+    "advanced_cn": "我选择这类工作是因为它把创意和策略结合在一起，和我的兴趣与优势都很匹配。"
+  },
+  {
+    "id": 1403,
+    "simple_en": "Yes, I sometimes miss being a student.",
+    "simple_cn": "是的，我有时会怀念学生生活。",
+    "advanced_en": "I do miss student life from time to time, especially the flexibility, but working gives me stronger purpose and structure.",
+    "advanced_cn": "我确实偶尔会想念学生时代，尤其是那种灵活性，但工作让我更有目标感和节奏感。"
+  },
+  {
+    "id": 1404,
+    "simple_en": "Yes, I like my job overall.",
+    "simple_cn": "是的，总体来说我喜欢这份工作。",
+    "advanced_en": "Overall, I enjoy my job because it is challenging and meaningful, and it allows continuous growth.",
+    "advanced_cn": "总体上我很喜欢这份工作，因为它既有挑战也有意义，而且能让我持续成长。"
+  },
+  {
+    "id": 1405,
+    "simple_en": "Yes, my job is related to my major to some extent.",
+    "simple_cn": "是的，我的工作在一定程度上和专业相关。",
+    "advanced_en": "Yes, there is a solid connection between my major and my work, especially in data thinking and business decision-making.",
+    "advanced_cn": "是的，我的专业和工作之间有明显联系，尤其体现在数据思维和商业决策上。"
+  },
+  {
+    "id": 1406,
+    "simple_en": "I prefer to work in the morning because I am more efficient then.",
+    "simple_cn": "我更喜欢早上工作，因为那时效率更高。",
+    "advanced_en": "I prefer morning work hours since my focus is strongest early on, and finishing key tasks first improves my whole day.",
+    "advanced_cn": "我更喜欢上午工作，因为那时专注力最强，先完成关键任务会让整天更高效。"
+  }
+]

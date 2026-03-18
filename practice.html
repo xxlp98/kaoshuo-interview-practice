@@ -332,9 +332,15 @@
       color: #fff;
     }
 
-    .btn-next {
+    .topic-actions {
       margin-top: clamp(22px, 2.8vw, 32px);
       width: 100%;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .topic-btn {
       height: clamp(56px, 7.2vw, 84px);
       border: 0;
       border-radius: var(--radius-pill);
@@ -342,22 +348,29 @@
       font-size: clamp(1rem, 0.72vw + 0.9rem, 1.26rem);
       font-weight: 800;
       font-family: var(--font-display);
-      background: linear-gradient(95deg, var(--next-start), var(--next-end));
       box-shadow: var(--shadow);
       cursor: pointer;
       transition: transform 0.2s ease, filter 0.2s ease, opacity 0.2s ease;
     }
 
-    .btn-next:hover {
+    .topic-btn:hover {
       transform: translateY(-1px);
       filter: saturate(1.08);
     }
 
-    .btn-next:disabled {
+    .topic-btn:disabled {
       cursor: not-allowed;
       opacity: 0.56;
       transform: none;
       filter: none;
+    }
+
+    .topic-btn-topic {
+      background: linear-gradient(95deg, var(--next-start), var(--next-end));
+    }
+
+    .topic-btn-question {
+      background: linear-gradient(95deg, #232734, #2f364a);
     }
 
     .footer {
@@ -701,9 +714,13 @@
       }
 
       .btn,
-      .btn-next {
+      .topic-btn {
         height: 52px;
         font-size: 1rem;
+      }
+
+      .topic-actions {
+        grid-template-columns: 1fr;
       }
 
       .footer {
@@ -796,7 +813,10 @@
       </div>
     </section>
 
-    <button class="btn-next" id="btnNext" type="button">🎯 抽取话题</button>
+    <div class="topic-actions">
+      <button class="topic-btn topic-btn-topic" id="btnDrawTopic" type="button">🎯 抽取新话题</button>
+      <button class="topic-btn topic-btn-question" id="btnDrawQuestion" type="button">🧩 抽取该话题内的新问题</button>
+    </div>
 
     <footer class="footer">
       © <a href="#" aria-label="cici雅思资料库">cici雅思资料库</a> | 雅思口语高分上岸
@@ -824,6 +844,7 @@
 
   <script>
     const QUESTION_BANK_PATH = "./question-bank.json";
+    const ANSWER_BANK_PATH = "./answer-bank.json";
     const AUDIO_MANIFEST_PATH = "./audio-manifest.json";
     const urlParams = new URLSearchParams(window.location.search);
     const shouldAutoStart = urlParams.get("autostart") === "1";
@@ -848,7 +869,8 @@
     const advancedCn = document.getElementById("advancedCn");
     const btnReplay = document.getElementById("btnReplay");
     const btnAction = document.getElementById("btnAction");
-    const btnNext = document.getElementById("btnNext");
+    const btnDrawTopic = document.getElementById("btnDrawTopic");
+    const btnDrawQuestion = document.getElementById("btnDrawQuestion");
     const speakSimple = document.getElementById("speakSimple");
     const speakAdvanced = document.getElementById("speakAdvanced");
     const historyToggle = document.getElementById("historyToggle");
@@ -862,12 +884,14 @@
     const speedButtons = Array.from(document.querySelectorAll(".speed-btn"));
 
     let questionBank = [];
+    let answerBank = {};
     let currentQuestion = null;
     let currentTopicId = null;
     let drawnTopicIds = [];
     let drawnQuestionIdsByTopic = {};
     let practiceHistoryQuestionIds = [];
     let isQuestionVisible = false;
+    let isAnswerVisible = false;
     let currentRate = 1;
     let audioManifest = {};
     let currentAudio = null;
@@ -898,7 +922,8 @@
         practiceHistoryQuestionIds: [],
         currentTopicId: null,
         currentQuestionId: null,
-        isQuestionVisible: false
+        isQuestionVisible: false,
+        isAnswerVisible: false
       };
     }
 
@@ -968,6 +993,7 @@
       state.currentTopicId = currentTopicId;
       state.currentQuestionId = currentQuestion ? currentQuestion.id : null;
       state.isQuestionVisible = isQuestionVisible;
+      state.isAnswerVisible = isAnswerVisible;
     }
 
     function loadActivePartState() {
@@ -977,11 +1003,13 @@
       practiceHistoryQuestionIds = [...state.practiceHistoryQuestionIds];
       currentTopicId = state.currentTopicId;
       isQuestionVisible = state.isQuestionVisible;
+      isAnswerVisible = state.isAnswerVisible;
 
       currentQuestion = findQuestionById(state.currentQuestionId);
       if (!currentQuestion) {
         currentTopicId = null;
         isQuestionVisible = false;
+        isAnswerVisible = false;
       }
     }
 
@@ -1011,6 +1039,7 @@
       if (!validQuestionIds.has(state.currentQuestionId)) {
         state.currentQuestionId = null;
         state.isQuestionVisible = false;
+        state.isAnswerVisible = false;
       }
     }
 
@@ -1341,35 +1370,65 @@
 
     function updateActionButton() {
       btnAction.classList.remove("btn-view", "btn-answer");
-      btnAction.classList.add("btn-view");
 
       if (!currentQuestion) {
         btnAction.textContent = "👀 查看题目";
+        btnAction.classList.add("btn-view");
         btnAction.disabled = true;
         return;
       }
 
       if (!isQuestionVisible) {
         btnAction.textContent = "👀 查看题目";
+        btnAction.classList.add("btn-view");
         btnAction.disabled = false;
         return;
       }
 
-      btnAction.textContent = "✅ 题目已显示";
-      btnAction.disabled = true;
+      btnAction.textContent = "💡 用口语回答";
+      btnAction.classList.add("btn-answer");
+      btnAction.disabled = isAnswerVisible;
     }
 
-    function updateNextButtonState() {
+    function getAnswerBundle(question) {
+      if (!question) {
+        return {
+          simple_en: "",
+          simple_cn: "",
+          advanced_en: "",
+          advanced_cn: ""
+        };
+      }
+
+      const fromBank = answerBank[question.id] || {};
+      return {
+        simple_en: String(fromBank.simple_en || question.simple_en || "A short answer could be based on your real personal experience."),
+        simple_cn: String(fromBank.simple_cn || question.simple_cn || "中文思路：用2-3句结合你的真实情况回答即可。"),
+        advanced_en: String(fromBank.advanced_en || question.advanced_en || "A stronger answer should include reasons, examples, and personal impact."),
+        advanced_cn: String(fromBank.advanced_cn || question.advanced_cn || "中文思路：补充原因、细节和影响，让表达更完整。")
+      };
+    }
+
+    function updateTopicButtonsState() {
       const topics = getPartTopics();
-      btnNext.disabled = topics.length === 0;
-      if (topics.length === 0) {
-        btnNext.textContent = "🎯 抽取话题";
+      const hasTopics = topics.length > 0;
+      const hasCurrentTopic = Boolean(currentTopicId && getTopicById(currentTopicId));
+
+      btnDrawTopic.disabled = !hasTopics;
+      btnDrawQuestion.disabled = !hasCurrentTopic;
+
+      if (!hasTopics) {
+        btnDrawTopic.textContent = "🎯 抽取新话题";
+        btnDrawQuestion.textContent = "🧩 抽取该话题内的新问题";
         return;
       }
-      if (currentTopicId && getTopicById(currentTopicId)) {
-        btnNext.textContent = "🎯 抽取问题";
+
+      if (hasCurrentTopic) {
+        btnDrawTopic.textContent = "🎯 抽取新话题";
+        btnDrawQuestion.textContent = "🧩 抽取该话题内的新问题";
       } else {
-        btnNext.textContent = "🎯 抽取话题";
+        btnDrawTopic.textContent = "🎯 抽取话题";
+        btnDrawQuestion.textContent = "🧩 先抽取话题";
       }
     }
 
@@ -1385,13 +1444,14 @@
       }
 
       const topic = getTopicById(currentTopicId);
+      const answer = getAnswerBundle(currentQuestion);
       questionPill.textContent = `${getPartLabel(activePart)} · ${topic ? topic.topic_title_en : "Topic"}`;
       questionEn.textContent = `Q${currentQuestion.order}. ${currentQuestion.question_en}`;
       questionCn.textContent = `💡 ${currentQuestion.question_cn}`;
-      simpleEn.textContent = "";
-      simpleCn.textContent = "";
-      advancedEn.textContent = "";
-      advancedCn.textContent = "";
+      simpleEn.textContent = `A1: ${answer.simple_en}`;
+      simpleCn.textContent = `中文翻译：${answer.simple_cn}`;
+      advancedEn.textContent = `A2: ${answer.advanced_en}`;
+      advancedCn.textContent = `中文翻译：${answer.advanced_cn}`;
     }
 
     function renderHistoryList() {
@@ -1437,9 +1497,9 @@
     }
 
     function renderStage() {
-      const isCompactStage = !currentQuestion || !isQuestionVisible;
+      const isCompactStage = !currentQuestion || (!isQuestionVisible && !isAnswerVisible);
       stageEl.classList.toggle("compact", isCompactStage);
-      updateNextButtonState();
+      updateTopicButtonsState();
 
       if (!currentQuestion) {
         waitingBox.classList.remove("hidden");
@@ -1464,7 +1524,11 @@
         questionBox.classList.add("hidden");
       }
 
-      answersPanel.classList.add("hidden");
+      if (isQuestionVisible && isAnswerVisible) {
+        answersPanel.classList.remove("hidden");
+      } else {
+        answersPanel.classList.add("hidden");
+      }
       updateActionButton();
       updateRemaining();
       renderHistoryList();
@@ -1518,6 +1582,7 @@
       markQuestionDrawn(topic.topic_id, question.id);
       addToHistory(question);
       isQuestionVisible = !hideQuestion;
+      isAnswerVisible = false;
       renderStage();
 
       if (autoSpeak) {
@@ -1558,7 +1623,7 @@
       });
     }
 
-    function drawNextQuestion(options = {}) {
+    function drawQuestionInCurrentTopic(options = {}) {
       const { autoSpeak = true } = options;
       const topics = getPartTopics();
 
@@ -1568,7 +1633,7 @@
       }
 
       if (!currentTopicId || !getTopicById(currentTopicId)) {
-        drawTopicAndFirstQuestion({ autoSpeak });
+        window.alert("请先抽取一个话题，再抽取该话题内的新问题。");
         return;
       }
 
@@ -1606,6 +1671,7 @@
       markQuestionDrawn(topic.topic_id, target.id);
       addToHistory(target);
       isQuestionVisible = true;
+      isAnswerVisible = false;
       renderStage();
       saveActivePartState();
       closeDrawer();
@@ -1670,6 +1736,46 @@
       saveActivePartState();
     }
 
+    async function loadAnswerBank() {
+      try {
+        const response = await fetch(ANSWER_BANK_PATH, { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        let list = [];
+
+        if (Array.isArray(data)) {
+          list = data;
+        } else if (data && typeof data === "object" && Array.isArray(data.items)) {
+          list = data.items;
+        } else if (data && typeof data === "object") {
+          list = Object.entries(data).map(([id, item]) => ({
+            id: Number(id),
+            ...(item || {})
+          }));
+        }
+
+        answerBank = list.reduce((acc, item) => {
+          const id = Number(item.id);
+          if (!Number.isFinite(id)) {
+            return acc;
+          }
+          acc[id] = {
+            simple_en: String(item.simple_en || ""),
+            simple_cn: String(item.simple_cn || ""),
+            advanced_en: String(item.advanced_en || ""),
+            advanced_cn: String(item.advanced_cn || "")
+          };
+          return acc;
+        }, {});
+      } catch (error) {
+        console.info("No answer bank detected; fallback to built-in placeholders.", error);
+        answerBank = {};
+      }
+    }
+
     async function loadAudioManifest() {
       try {
         const response = await fetch(AUDIO_MANIFEST_PATH, { cache: "no-store" });
@@ -1700,27 +1806,43 @@
     });
 
     btnAction.addEventListener("click", () => {
-      if (!currentQuestion || isQuestionVisible) {
+      if (!currentQuestion) {
         return;
       }
-      isQuestionVisible = true;
-      renderStage();
-      saveActivePartState();
+
+      if (!isQuestionVisible) {
+        isQuestionVisible = true;
+        renderStage();
+        saveActivePartState();
+        return;
+      }
+
+      if (!isAnswerVisible) {
+        isAnswerVisible = true;
+        renderStage();
+        saveActivePartState();
+      }
     });
 
-    btnNext.addEventListener("click", () => {
-      drawNextQuestion({ autoSpeak: true });
+    btnDrawTopic.addEventListener("click", () => {
+      drawTopicAndFirstQuestion({ autoSpeak: true });
+    });
+
+    btnDrawQuestion.addEventListener("click", () => {
+      drawQuestionInCurrentTopic({ autoSpeak: true });
     });
 
     speakSimple.addEventListener("click", () => {
       if (currentQuestion) {
-        speakByRole("topic", currentQuestion.question_en);
+        const answer = getAnswerBundle(currentQuestion);
+        speakByRole("simple", answer.simple_en);
       }
     });
 
     speakAdvanced.addEventListener("click", () => {
       if (currentQuestion) {
-        speakByRole("topic", currentQuestion.question_en);
+        const answer = getAnswerBundle(currentQuestion);
+        speakByRole("advanced", answer.advanced_en);
       }
     });
 
@@ -1785,7 +1907,7 @@
 
     renderStage();
     initHistoryToggleDrag();
-    loadAudioManifest().then(() => {
+    Promise.all([loadAudioManifest(), loadAnswerBank()]).then(() => {
       loadQuestionBank();
     });
   </script>

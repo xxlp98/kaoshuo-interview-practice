@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # pyright: reportMissingImports=false
-"""Batch-generate IELTS speaking audio files from question-bank.json via Edge-TTS.
+"""Batch-generate IELTS speaking audio files from question/answer banks via Edge-TTS.
 
 Outputs:
 - assets/audio/<question_id>/topic.mp3
@@ -21,7 +21,7 @@ from typing import Dict, List
 import edge_tts
 
 TEXT_FIELDS = {
-    "topic": "topic_en",
+    "topic": "question_en",
     "simple": "simple_en",
     "advanced": "advanced_en",
 }
@@ -33,6 +33,11 @@ def parse_args() -> argparse.Namespace:
         "--question-bank",
         default="question-bank.json",
         help="Path to question-bank.json",
+    )
+    parser.add_argument(
+        "--answer-bank",
+        default="answer-bank.json",
+        help="Path to answer-bank.json",
     )
     parser.add_argument(
         "--output-dir",
@@ -89,6 +94,28 @@ def normalize_text(value: str) -> str:
     return " ".join((value or "").strip().split())
 
 
+def load_answer_bank(path: Path) -> Dict[str, Dict]:
+    if not path.exists():
+        return {}
+
+    with path.open("r", encoding="utf-8") as fh:
+        data = json.load(fh)
+
+    if not isinstance(data, list):
+        return {}
+
+    answer_map: Dict[str, Dict] = {}
+    for item in data:
+        if not isinstance(item, dict):
+            continue
+        question_id = str(item.get("id", "")).strip()
+        if not question_id:
+            continue
+        answer_map[question_id] = item
+
+    return answer_map
+
+
 async def synthesize_to_file(
     text: str,
     output_path: Path,
@@ -111,10 +138,12 @@ async def synthesize_to_file(
 async def generate_audio(args: argparse.Namespace) -> None:
     project_root = Path.cwd()
     question_bank_path = project_root / args.question_bank
+    answer_bank_path = project_root / args.answer_bank
     output_dir = project_root / args.output_dir
     manifest_path = project_root / args.manifest
 
     questions = load_question_bank(question_bank_path)
+    answers = load_answer_bank(answer_bank_path)
 
     manifest = {
         "meta": {
@@ -137,9 +166,14 @@ async def generate_audio(args: argparse.Namespace) -> None:
             continue
 
         item_manifest: Dict[str, str] = {}
+        answer_item = answers.get(question_id, {})
 
         for role, field_name in TEXT_FIELDS.items():
-            text = normalize_text(str(question.get(field_name, "")))
+            if role == "topic":
+                text = normalize_text(str(question.get(field_name, "")))
+            else:
+                # Preferred source is answer-bank.json; fallback keeps backward compatibility.
+                text = normalize_text(str(answer_item.get(field_name, "") or question.get(field_name, "")))
             if not text:
                 continue
 
@@ -170,6 +204,7 @@ async def generate_audio(args: argparse.Namespace) -> None:
     )
 
     print(f"Questions processed: {len(questions)}")
+    print(f"Answer entries loaded: {len(answers)}")
     print(f"Audio generated: {generated_count}")
     print(f"Audio skipped (already exists): {skipped_count}")
     print(f"Manifest written: {manifest_path}")
