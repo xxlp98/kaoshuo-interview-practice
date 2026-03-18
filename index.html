@@ -216,7 +216,7 @@
     <section class="card">
       <header class="top">
         <div class="title">雅思口语练习</div>
-        <div class="remaining" id="remaining">剩余未抽：--题</div>
+        <div class="remaining" id="remaining">剩余未抽：--个话题</div>
       </header>
 
       <div class="stage">
@@ -225,7 +225,7 @@
       </div>
     </section>
 
-    <button class="btn-next" id="btnStart" type="button">🎲 随机抽取并开始</button>
+    <button class="btn-next" id="btnStart" type="button">🎯 抽取话题并开始</button>
 
     <footer class="footer">
       © <a href="#" aria-label="cici雅思资料库">cici雅思资料库</a> | 雅思口语高分上岸
@@ -244,11 +244,17 @@
           throw new Error(`HTTP ${response.status}`);
         }
         const data = await response.json();
-        const total = Array.isArray(data) ? data.length : 0;
-        remainingEl.textContent = `剩余未抽：${total}题`;
+        const list = Array.isArray(data) ? data : [];
+        const topicSet = new Set(
+          list
+            .filter((item) => String(item.part || "").toLowerCase() === "part1")
+            .map((item) => String(item.topic_id || "").trim())
+            .filter(Boolean)
+        );
+        remainingEl.textContent = `剩余未抽：${topicSet.size}个话题`;
       } catch (error) {
         console.error("Failed to load question bank summary:", error);
-        remainingEl.textContent = "剩余未抽：--题";
+        remainingEl.textContent = "剩余未抽：--个话题";
       }
     }
 

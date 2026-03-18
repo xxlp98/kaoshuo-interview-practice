@@ -375,6 +375,50 @@
       border-bottom: 2px solid rgba(165, 168, 173, 0.55);
     }
 
+    .part-switcher {
+      position: fixed;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 28;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 10px;
+      border-radius: 16px;
+      background: rgba(245, 247, 251, 0.95);
+      border: 1px solid #d8dce6;
+      box-shadow: 0 12px 28px rgba(31, 34, 56, 0.13);
+      backdrop-filter: blur(5px);
+    }
+
+    .part-btn {
+      border: 1px solid #cfd5e2;
+      background: #ffffff;
+      color: #59606d;
+      border-radius: 999px;
+      min-width: 80px;
+      padding: 8px 12px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      font-family: var(--font-display);
+      cursor: pointer;
+      transition: transform 0.16s ease, border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+    }
+
+    .part-btn:hover {
+      transform: translateX(1px);
+      border-color: #868edf;
+      color: #434cc6;
+    }
+
+    .part-btn.active {
+      border-color: #545eda;
+      background: linear-gradient(135deg, #5d67e2, #6b53c3);
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(82, 90, 196, 0.28);
+    }
+
     .history-toggle {
       position: fixed;
       right: 16px;
@@ -679,6 +723,22 @@
       .history-drawer {
         width: min(360px, 92vw);
       }
+
+      .part-switcher {
+        left: 10px;
+        top: auto;
+        bottom: 18px;
+        transform: none;
+        flex-direction: row;
+        gap: 6px;
+        padding: 8px;
+      }
+
+      .part-btn {
+        min-width: 66px;
+        padding: 6px 10px;
+        font-size: 0.76rem;
+      }
     }
   </style>
 </head>
@@ -687,7 +747,7 @@
     <section class="card">
       <header class="top">
         <div class="title">雅思口语练习</div>
-        <div class="remaining" id="remaining">剩余未抽：0题</div>
+        <div class="remaining" id="remaining">剩余未抽：0个话题</div>
       </header>
 
       <div class="stage" id="stage">
@@ -736,7 +796,7 @@
       </div>
     </section>
 
-    <button class="btn-next" id="btnNext" type="button">🎲 抽取下一题</button>
+    <button class="btn-next" id="btnNext" type="button">🎯 抽取话题</button>
 
     <footer class="footer">
       © <a href="#" aria-label="cici雅思资料库">cici雅思资料库</a> | 雅思口语高分上岸
@@ -744,6 +804,12 @@
   </div>
 
   <button class="history-toggle" id="historyToggle" type="button">🗂 练习记录</button>
+
+  <nav class="part-switcher" aria-label="选择口语Part">
+    <button class="part-btn active" data-part="part1" type="button">Part 1</button>
+    <button class="part-btn" data-part="part2" type="button">Part 2</button>
+    <button class="part-btn" data-part="part3" type="button">Part 3</button>
+  </nav>
 
   <aside class="history-drawer" id="historyDrawer" aria-hidden="true">
     <div class="history-header">
@@ -761,6 +827,12 @@
     const AUDIO_MANIFEST_PATH = "./audio-manifest.json";
     const urlParams = new URLSearchParams(window.location.search);
     const shouldAutoStart = urlParams.get("autostart") === "1";
+    const PARTS = ["part1", "part2", "part3"];
+    const PART_LABELS = {
+      part1: "Part 1",
+      part2: "Part 2",
+      part3: "Part 3"
+    };
 
     const stageEl = document.getElementById("stage");
     const remainingEl = document.getElementById("remaining");
@@ -784,19 +856,29 @@
     const historyClose = document.getElementById("historyClose");
     const historyBackdrop = document.getElementById("historyBackdrop");
     const historyList = document.getElementById("historyList");
+    const historyTip = document.querySelector(".history-tip");
+    const partButtons = Array.from(document.querySelectorAll(".part-btn"));
 
     const speedButtons = Array.from(document.querySelectorAll(".speed-btn"));
 
     let questionBank = [];
     let currentQuestion = null;
-    let drawnQuestionIds = [];
-    let practiceHistoryIds = [];
+    let currentTopicId = null;
+    let drawnTopicIds = [];
+    let drawnQuestionIdsByTopic = {};
+    let practiceHistoryQuestionIds = [];
     let isQuestionVisible = false;
-    let isAnswerVisible = false;
     let currentRate = 1;
     let audioManifest = {};
     let currentAudio = null;
+    let activePart = normalizePart(urlParams.get("part"));
+
     const HISTORY_TOGGLE_POS_KEY = "ielts-history-toggle-pos";
+    const partStates = {
+      part1: createPartState(),
+      part2: createPartState(),
+      part3: createPartState()
+    };
 
     const dragState = {
       pointerId: null,
@@ -808,6 +890,164 @@
       justDragged: false,
       inited: false
     };
+
+    function createPartState() {
+      return {
+        drawnTopicIds: [],
+        drawnQuestionIdsByTopic: {},
+        practiceHistoryQuestionIds: [],
+        currentTopicId: null,
+        currentQuestionId: null,
+        isQuestionVisible: false
+      };
+    }
+
+    function normalizePart(value) {
+      const raw = String(value || "").trim().toLowerCase();
+      if (raw === "part2" || raw === "part 2" || raw === "2") {
+        return "part2";
+      }
+      if (raw === "part3" || raw === "part 3" || raw === "3") {
+        return "part3";
+      }
+      return "part1";
+    }
+
+    function getPartLabel(partKey) {
+      return PART_LABELS[partKey] || "Part 1";
+    }
+
+    function getPartQuestions(partKey = activePart) {
+      return questionBank.filter((item) => item.part === partKey);
+    }
+
+    function getPartTopics(partKey = activePart) {
+      const map = new Map();
+      getPartQuestions(partKey).forEach((item) => {
+        const topicId = item.topic_id;
+        if (!map.has(topicId)) {
+          map.set(topicId, {
+            topic_id: topicId,
+            topic_title_en: item.topic_title_en,
+            topic_title_cn: item.topic_title_cn,
+            topic_order: item.topic_order,
+            questions: []
+          });
+        }
+        map.get(topicId).questions.push(item);
+      });
+
+      return [...map.values()]
+        .sort((a, b) => a.topic_order - b.topic_order)
+        .map((topic) => ({
+          ...topic,
+          questions: [...topic.questions].sort((a, b) => a.order - b.order)
+        }));
+    }
+
+    function getTopicById(topicId, partKey = activePart) {
+      return getPartTopics(partKey).find((topic) => topic.topic_id === topicId) || null;
+    }
+
+    function syncHistoryTip() {
+      historyTip.textContent = `当前 ${getPartLabel(activePart)} 练习记录，点击任意问题可快速跳转`;
+    }
+
+    function renderPartButtons() {
+      partButtons.forEach((button) => {
+        button.classList.toggle("active", button.dataset.part === activePart);
+      });
+      syncHistoryTip();
+    }
+
+    function saveActivePartState() {
+      const state = partStates[activePart];
+      state.drawnTopicIds = [...drawnTopicIds];
+      state.drawnQuestionIdsByTopic = JSON.parse(JSON.stringify(drawnQuestionIdsByTopic));
+      state.practiceHistoryQuestionIds = [...practiceHistoryQuestionIds];
+      state.currentTopicId = currentTopicId;
+      state.currentQuestionId = currentQuestion ? currentQuestion.id : null;
+      state.isQuestionVisible = isQuestionVisible;
+    }
+
+    function loadActivePartState() {
+      const state = partStates[activePart];
+      drawnTopicIds = [...state.drawnTopicIds];
+      drawnQuestionIdsByTopic = JSON.parse(JSON.stringify(state.drawnQuestionIdsByTopic || {}));
+      practiceHistoryQuestionIds = [...state.practiceHistoryQuestionIds];
+      currentTopicId = state.currentTopicId;
+      isQuestionVisible = state.isQuestionVisible;
+
+      currentQuestion = findQuestionById(state.currentQuestionId);
+      if (!currentQuestion) {
+        currentTopicId = null;
+        isQuestionVisible = false;
+      }
+    }
+
+    function sanitizePartState(partKey) {
+      const validQuestions = getPartQuestions(partKey);
+      const validQuestionIds = new Set(validQuestions.map((item) => item.id));
+      const validTopicIds = new Set(validQuestions.map((item) => item.topic_id));
+      const state = partStates[partKey];
+
+      state.drawnTopicIds = state.drawnTopicIds.filter((id) => validTopicIds.has(id));
+
+      const sanitizedDrawnByTopic = {};
+      Object.entries(state.drawnQuestionIdsByTopic || {}).forEach(([topicId, ids]) => {
+        if (!validTopicIds.has(topicId)) {
+          return;
+        }
+        sanitizedDrawnByTopic[topicId] = ids.filter((id) => validQuestionIds.has(id));
+      });
+      state.drawnQuestionIdsByTopic = sanitizedDrawnByTopic;
+
+      state.practiceHistoryQuestionIds = state.practiceHistoryQuestionIds.filter((id) => validQuestionIds.has(id));
+
+      if (!validTopicIds.has(state.currentTopicId)) {
+        state.currentTopicId = null;
+      }
+
+      if (!validQuestionIds.has(state.currentQuestionId)) {
+        state.currentQuestionId = null;
+        state.isQuestionVisible = false;
+      }
+    }
+
+    function syncPartInUrl(removeAutoStart = false) {
+      if (!window.history.replaceState) {
+        return;
+      }
+      const params = new URLSearchParams(window.location.search);
+      params.set("part", activePart);
+      if (removeAutoStart) {
+        params.delete("autostart");
+      }
+      const query = params.toString();
+      window.history.replaceState({}, document.title, query ? `${window.location.pathname}?${query}` : window.location.pathname);
+    }
+
+    function switchPart(nextPart, options = {}) {
+      const { fromInit = false } = options;
+      if (!PARTS.includes(nextPart)) {
+        return;
+      }
+      if (!fromInit && nextPart === activePart) {
+        return;
+      }
+
+      if (!fromInit) {
+        saveActivePartState();
+      }
+
+      stopAnyPlayback();
+      activePart = nextPart;
+      loadActivePartState();
+      renderPartButtons();
+      syncPartInUrl(true);
+      closeDrawer();
+      renderStage();
+    }
 
     function clamp(value, min, max) {
       return Math.min(Math.max(value, min), max);
@@ -827,14 +1067,12 @@
         if (!raw) {
           return null;
         }
-
         const parsed = JSON.parse(raw);
         if (!parsed || !Number.isFinite(parsed.left) || !Number.isFinite(parsed.top)) {
           return null;
         }
-
         return parsed;
-      } catch (error) {
+      } catch (_error) {
         return null;
       }
     }
@@ -843,12 +1081,8 @@
       const gap = 8;
       const maxLeft = window.innerWidth - historyToggle.offsetWidth - gap;
       const maxTop = window.innerHeight - historyToggle.offsetHeight - gap;
-
-      const safeLeft = clamp(left, gap, Math.max(gap, maxLeft));
-      const safeTop = clamp(top, gap, Math.max(gap, maxTop));
-
-      historyToggle.style.left = `${safeLeft}px`;
-      historyToggle.style.top = `${safeTop}px`;
+      historyToggle.style.left = `${clamp(left, gap, Math.max(gap, maxLeft))}px`;
+      historyToggle.style.top = `${clamp(top, gap, Math.max(gap, maxTop))}px`;
       historyToggle.style.right = "auto";
       historyToggle.style.bottom = "auto";
       historyToggle.style.transform = "none";
@@ -858,7 +1092,6 @@
       if (dragState.inited) {
         return;
       }
-
       const saved = loadHistoryTogglePosition();
       if (saved) {
         applyHistoryTogglePosition(saved.left, saved.top);
@@ -866,7 +1099,6 @@
         const rect = historyToggle.getBoundingClientRect();
         applyHistoryTogglePosition(rect.left, rect.top);
       }
-
       dragState.inited = true;
     }
 
@@ -874,7 +1106,6 @@
       if (dragState.pointerId !== pointerId) {
         return;
       }
-
       if (dragState.moved) {
         const rect = historyToggle.getBoundingClientRect();
         saveHistoryTogglePosition(rect.left, rect.top);
@@ -883,13 +1114,11 @@
           dragState.justDragged = false;
         }, 0);
       }
-
       try {
         historyToggle.releasePointerCapture(pointerId);
-      } catch (error) {
-        // Ignore when capture is already released.
+      } catch (_error) {
+        // ignore
       }
-
       dragState.pointerId = null;
       historyToggle.classList.remove("dragging");
     }
@@ -901,9 +1130,7 @@
         if (event.pointerType === "mouse" && event.button !== 0) {
           return;
         }
-
         ensureHistoryTogglePosition();
-
         const rect = historyToggle.getBoundingClientRect();
         dragState.pointerId = event.pointerId;
         dragState.startX = event.clientX;
@@ -911,7 +1138,6 @@
         dragState.originLeft = rect.left;
         dragState.originTop = rect.top;
         dragState.moved = false;
-
         historyToggle.setPointerCapture(event.pointerId);
         historyToggle.classList.add("dragging");
         event.preventDefault();
@@ -921,20 +1147,17 @@
         if (dragState.pointerId !== event.pointerId) {
           return;
         }
-
         const deltaX = event.clientX - dragState.startX;
         const deltaY = event.clientY - dragState.startY;
         if (!dragState.moved && (Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3)) {
           dragState.moved = true;
         }
-
         applyHistoryTogglePosition(dragState.originLeft + deltaX, dragState.originTop + deltaY);
       });
 
       historyToggle.addEventListener("pointerup", (event) => {
         endHistoryToggleDrag(event.pointerId);
       });
-
       historyToggle.addEventListener("pointercancel", (event) => {
         endHistoryToggleDrag(event.pointerId);
       });
@@ -957,39 +1180,31 @@
       let score = 0;
       const name = voice.name || "";
       const lang = voice.lang || "";
-
       if (/^en-US$/i.test(lang)) {
         score += 45;
       } else if (/^en(-|_)/i.test(lang)) {
         score += 30;
       }
-
       if (voice.localService) {
         score += 16;
       }
-
       if (/(Natural|Neural|Premium|Enhanced)/i.test(name)) {
         score += 90;
       }
-
       if (/(Samantha|Google US English|Karen|Moira|Daniel|Serena|Alex|Aria|Jenny|Guy|Emma|Brian|Andrew|Ana)/i.test(name)) {
         score += 48;
       }
-
       if (/(Compact|eSpeak|Festival|Robot|Synth)/i.test(name)) {
         score -= 80;
       }
-
       return score;
     }
 
     function pickPreferredEnglishVoice() {
       const englishVoices = getAllEnglishVoices();
-
       if (!englishVoices.length) {
         return null;
       }
-
       const sorted = [...englishVoices].sort((a, b) => getVoiceScore(b) - getVoiceScore(a));
       return sorted[0] || englishVoices[0];
     }
@@ -999,26 +1214,21 @@
       if (!normalized) {
         return [];
       }
-
       if (normalized.length <= 170) {
         return [normalized];
       }
-
       const sentences = normalized.match(/[^.!?;:]+[.!?;:]?/g) || [normalized];
       const chunks = [];
       let bucket = "";
-
       sentences.forEach((sentence) => {
         const part = sentence.trim();
         if (!part) {
           return;
         }
-
         if (!bucket) {
           bucket = part;
           return;
         }
-
         const candidate = `${bucket} ${part}`;
         if (candidate.length > 170) {
           chunks.push(bucket);
@@ -1027,11 +1237,9 @@
           bucket = candidate;
         }
       });
-
       if (bucket) {
         chunks.push(bucket);
       }
-
       return chunks;
     }
 
@@ -1039,7 +1247,6 @@
       if (!currentAudio) {
         return;
       }
-
       currentAudio.pause();
       currentAudio.currentTime = 0;
       currentAudio = null;
@@ -1066,14 +1273,11 @@
       if (!audioPath) {
         return false;
       }
-
       stopAnyPlayback();
-
       const audio = new Audio(audioPath);
       audio.preload = "auto";
       audio.playbackRate = currentRate;
       currentAudio = audio;
-
       try {
         await audio.play();
         audio.onended = () => {
@@ -1098,39 +1302,75 @@
           return;
         }
       }
-
       speakText(fallbackText);
     }
 
+    function speakText(text) {
+      if (!text) {
+        return;
+      }
+      if (!("speechSynthesis" in window)) {
+        window.alert("当前浏览器不支持语音朗读。请使用 Chrome 或 Edge。\nSpeech synthesis is not supported in this browser.");
+        return;
+      }
+      const preferredVoice = pickPreferredEnglishVoice();
+      const chunks = splitIntoSpeechChunks(text);
+      if (!chunks.length) {
+        return;
+      }
+      stopAnyPlayback();
+      chunks.forEach((chunk, index) => {
+        const utterance = new SpeechSynthesisUtterance(chunk);
+        utterance.lang = preferredVoice ? preferredVoice.lang : "en-US";
+        const baseRate = currentRate * 0.94;
+        utterance.rate = Math.max(0.72, Math.min(1.1, baseRate + (index % 2 === 0 ? 0.006 : -0.004)));
+        utterance.pitch = 0.97;
+        utterance.volume = 1;
+        if (preferredVoice) {
+          utterance.voice = preferredVoice;
+        }
+        window.speechSynthesis.speak(utterance);
+      });
+    }
+
     function updateRemaining() {
-      const remaining = Math.max(questionBank.length - drawnQuestionIds.length, 0);
-      remainingEl.textContent = `剩余未抽：${remaining}题`;
+      const topicsTotal = getPartTopics().length;
+      const remaining = Math.max(topicsTotal - drawnTopicIds.length, 0);
+      remainingEl.textContent = `剩余未抽：${remaining}个话题`;
     }
 
     function updateActionButton() {
       btnAction.classList.remove("btn-view", "btn-answer");
+      btnAction.classList.add("btn-view");
 
       if (!currentQuestion) {
         btnAction.textContent = "👀 查看题目";
-        btnAction.classList.add("btn-view");
         btnAction.disabled = true;
         return;
       }
 
       if (!isQuestionVisible) {
         btnAction.textContent = "👀 查看题目";
-        btnAction.classList.add("btn-view");
         btnAction.disabled = false;
         return;
       }
 
-      btnAction.textContent = "💡 用口语回答";
-      btnAction.classList.add("btn-answer");
-      btnAction.disabled = isAnswerVisible;
+      btnAction.textContent = "✅ 题目已显示";
+      btnAction.disabled = true;
     }
 
     function updateNextButtonState() {
-      btnNext.disabled = questionBank.length === 0;
+      const topics = getPartTopics();
+      btnNext.disabled = topics.length === 0;
+      if (topics.length === 0) {
+        btnNext.textContent = "🎯 抽取话题";
+        return;
+      }
+      if (currentTopicId && getTopicById(currentTopicId)) {
+        btnNext.textContent = "🎯 抽取问题";
+      } else {
+        btnNext.textContent = "🎯 抽取话题";
+      }
     }
 
     function fillQuestionContent() {
@@ -1144,32 +1384,33 @@
         return;
       }
 
-      questionPill.textContent = `Question ${currentQuestion.id}`;
-      questionEn.textContent = `${currentQuestion.id}. ${currentQuestion.topic_en}`;
-      questionCn.textContent = `💡 ${currentQuestion.topic_cn}`;
-      simpleEn.textContent = `A1: ${currentQuestion.simple_en}`;
-      simpleCn.textContent = `中文翻译：${currentQuestion.simple_cn}`;
-      advancedEn.textContent = `A2: ${currentQuestion.advanced_en}`;
-      advancedCn.textContent = `中文翻译：${currentQuestion.advanced_cn}`;
+      const topic = getTopicById(currentTopicId);
+      questionPill.textContent = `${getPartLabel(activePart)} · ${topic ? topic.topic_title_en : "Topic"}`;
+      questionEn.textContent = `Q${currentQuestion.order}. ${currentQuestion.question_en}`;
+      questionCn.textContent = `💡 ${currentQuestion.question_cn}`;
+      simpleEn.textContent = "";
+      simpleCn.textContent = "";
+      advancedEn.textContent = "";
+      advancedCn.textContent = "";
     }
 
     function renderHistoryList() {
       historyList.innerHTML = "";
+      const questions = getPartQuestions();
 
-      if (!practiceHistoryIds.length) {
+      if (!practiceHistoryQuestionIds.length) {
         const emptyNode = document.createElement("li");
         emptyNode.className = "history-empty";
-        emptyNode.textContent = "暂无练习记录，先抽一题开始吧。";
+        emptyNode.textContent = `${getPartLabel(activePart)} 暂无练习记录，先抽取话题开始吧。`;
         historyList.appendChild(emptyNode);
         return;
       }
 
-      practiceHistoryIds.forEach((id) => {
-        const item = questionBank.find((question) => question.id === id);
+      practiceHistoryQuestionIds.forEach((id) => {
+        const item = questions.find((question) => question.id === id);
         if (!item) {
           return;
         }
-
         const li = document.createElement("li");
         const button = document.createElement("button");
         button.type = "button";
@@ -1182,11 +1423,11 @@
 
         const qid = document.createElement("span");
         qid.className = "history-qid";
-        qid.textContent = `Question ${item.id}`;
+        qid.textContent = `${item.topic_title_en} · Q${item.order}`;
 
         const topic = document.createElement("span");
         topic.className = "history-topic";
-        topic.textContent = item.topic_en;
+        topic.textContent = item.question_en;
 
         button.appendChild(qid);
         button.appendChild(topic);
@@ -1196,7 +1437,7 @@
     }
 
     function renderStage() {
-      const isCompactStage = !currentQuestion || (!isQuestionVisible && !isAnswerVisible);
+      const isCompactStage = !currentQuestion || !isQuestionVisible;
       stageEl.classList.toggle("compact", isCompactStage);
       updateNextButtonState();
 
@@ -1223,12 +1464,7 @@
         questionBox.classList.add("hidden");
       }
 
-      if (isQuestionVisible && isAnswerVisible) {
-        answersPanel.classList.remove("hidden");
-      } else {
-        answersPanel.classList.add("hidden");
-      }
-
+      answersPanel.classList.add("hidden");
       updateActionButton();
       updateRemaining();
       renderHistoryList();
@@ -1246,110 +1482,137 @@
       historyBackdrop.classList.remove("hidden");
     }
 
+    function markQuestionDrawn(topicId, questionId) {
+      if (!drawnQuestionIdsByTopic[topicId]) {
+        drawnQuestionIdsByTopic[topicId] = [];
+      }
+      if (!drawnQuestionIdsByTopic[topicId].includes(questionId)) {
+        drawnQuestionIdsByTopic[topicId].push(questionId);
+      }
+    }
+
     function addToHistory(question) {
       if (!question) {
         return;
       }
-      practiceHistoryIds = [question.id, ...practiceHistoryIds.filter((id) => id !== question.id)];
+      practiceHistoryQuestionIds = [
+        question.id,
+        ...practiceHistoryQuestionIds.filter((id) => id !== question.id)
+      ];
     }
 
-    function markAsDrawn(questionId) {
-      if (!drawnQuestionIds.includes(questionId)) {
-        drawnQuestionIds.push(questionId);
+    function findQuestionById(questionId) {
+      if (!Number.isFinite(questionId)) {
+        return null;
       }
+      return getPartQuestions().find((question) => question.id === questionId) || null;
     }
 
-    function findById(questionId) {
-      return questionBank.find((question) => question.id === questionId) || null;
-    }
-
-    function jumpToHistoryQuestion(questionId) {
-      const target = findById(questionId);
-      if (!target) {
-        return;
+    function setCurrentQuestion(topic, question, options = {}) {
+      const { autoSpeak = true, hideQuestion = true } = options;
+      currentTopicId = topic.topic_id;
+      currentQuestion = question;
+      if (!drawnTopicIds.includes(topic.topic_id)) {
+        drawnTopicIds.push(topic.topic_id);
       }
-
-      currentQuestion = target;
-      isQuestionVisible = true;
-      isAnswerVisible = false;
-      markAsDrawn(target.id);
-      addToHistory(target);
-      renderStage();
-      closeDrawer();
-    }
-
-    function speakText(text) {
-      if (!text) {
-        return;
-      }
-
-      if (!("speechSynthesis" in window)) {
-        window.alert("当前浏览器不支持语音朗读。请使用 Chrome 或 Edge。\nSpeech synthesis is not supported in this browser.");
-        return;
-      }
-
-      const preferredVoice = pickPreferredEnglishVoice();
-      const chunks = splitIntoSpeechChunks(text);
-      if (!chunks.length) {
-        return;
-      }
-
-      stopAnyPlayback();
-
-      chunks.forEach((chunk, index) => {
-        const utterance = new SpeechSynthesisUtterance(chunk);
-        utterance.lang = preferredVoice ? preferredVoice.lang : "en-US";
-        const baseRate = currentRate * 0.94;
-        utterance.rate = Math.max(0.72, Math.min(1.1, baseRate + (index % 2 === 0 ? 0.006 : -0.004)));
-        utterance.pitch = 0.97;
-        utterance.volume = 1;
-
-        if (preferredVoice) {
-          utterance.voice = preferredVoice;
-        }
-
-        window.speechSynthesis.speak(utterance);
-      });
-    }
-
-    function drawNextQuestion(options = {}) {
-      const { autoSpeak = false } = options;
-
-      if (!questionBank.length) {
-        return;
-      }
-
-      if (drawnQuestionIds.length >= questionBank.length) {
-        window.alert("所有题目已练习完毕，已为你重置题库。\nYou have completed all questions. A new round has started.");
-        drawnQuestionIds = [];
-      }
-
-      const available = questionBank.filter((item) => !drawnQuestionIds.includes(item.id));
-      if (!available.length) {
-        return;
-      }
-
-      const randomIndex = Math.floor(Math.random() * available.length);
-      currentQuestion = available[randomIndex];
-      markAsDrawn(currentQuestion.id);
-      addToHistory(currentQuestion);
-
-      isQuestionVisible = false;
-      isAnswerVisible = false;
+      markQuestionDrawn(topic.topic_id, question.id);
+      addToHistory(question);
+      isQuestionVisible = !hideQuestion;
       renderStage();
 
       if (autoSpeak) {
         window.setTimeout(() => {
-          speakByRole("topic", currentQuestion.topic_en);
+          speakByRole("topic", question.question_en);
         }, 120);
       }
+
+      saveActivePartState();
+    }
+
+    function drawTopicAndFirstQuestion(options = {}) {
+      const { autoSpeak = true } = options;
+      const topics = getPartTopics();
+
+      if (!topics.length) {
+        window.alert(`${getPartLabel(activePart)} 暂无话题，请先补充该 Part 题库。`);
+        return;
+      }
+
+      let availableTopics = topics.filter((topic) => !drawnTopicIds.includes(topic.topic_id));
+      if (!availableTopics.length) {
+        window.alert(`${getPartLabel(activePart)} 话题已全部抽取完，已自动重置话题池。`);
+        drawnTopicIds = [];
+        drawnQuestionIdsByTopic = {};
+        availableTopics = topics;
+      }
+
+      const topic = availableTopics[Math.floor(Math.random() * availableTopics.length)];
+      const firstQuestion = topic.questions[0];
+      if (!firstQuestion) {
+        return;
+      }
+
+      setCurrentQuestion(topic, firstQuestion, {
+        autoSpeak,
+        hideQuestion: true
+      });
+    }
+
+    function drawNextQuestion(options = {}) {
+      const { autoSpeak = true } = options;
+      const topics = getPartTopics();
+
+      if (!topics.length) {
+        window.alert(`${getPartLabel(activePart)} 暂无话题，请先补充该 Part 题库。`);
+        return;
+      }
+
+      if (!currentTopicId || !getTopicById(currentTopicId)) {
+        drawTopicAndFirstQuestion({ autoSpeak });
+        return;
+      }
+
+      const topic = getTopicById(currentTopicId);
+      const drawnInTopic = drawnQuestionIdsByTopic[topic.topic_id] || [];
+      const remainingQuestions = topic.questions.filter((question) => !drawnInTopic.includes(question.id));
+
+      if (!remainingQuestions.length) {
+        window.alert(`【${topic.topic_title_en}】该话题问题已抽取完，自动抽取下一个话题。`);
+        drawTopicAndFirstQuestion({ autoSpeak });
+        return;
+      }
+
+      const question = remainingQuestions[Math.floor(Math.random() * remainingQuestions.length)];
+      setCurrentQuestion(topic, question, {
+        autoSpeak,
+        hideQuestion: true
+      });
+    }
+
+    function jumpToHistoryQuestion(questionId) {
+      const target = findQuestionById(questionId);
+      if (!target) {
+        return;
+      }
+      const topic = getTopicById(target.topic_id);
+      if (!topic) {
+        return;
+      }
+      currentTopicId = topic.topic_id;
+      currentQuestion = target;
+      if (!drawnTopicIds.includes(topic.topic_id)) {
+        drawnTopicIds.push(topic.topic_id);
+      }
+      markQuestionDrawn(topic.topic_id, target.id);
+      addToHistory(target);
+      isQuestionVisible = true;
+      renderStage();
+      saveActivePartState();
+      closeDrawer();
     }
 
     function clearAutoStartFlagInUrl() {
-      if (!window.history.replaceState) {
-        return;
-      }
-      window.history.replaceState({}, document.title, window.location.pathname);
+      syncPartInUrl(true);
     }
 
     async function loadQuestionBank() {
@@ -1358,13 +1621,25 @@
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
         }
-
         const data = await response.json();
         if (!Array.isArray(data) || !data.length) {
           throw new Error("Invalid question bank format");
         }
 
-        questionBank = data;
+        questionBank = data.map((item, index) => ({
+          id: Number(item.id),
+          part: normalizePart(item.part),
+          topic_id: String(item.topic_id || `topic-${index + 1}`),
+          topic_title_en: String(item.topic_title_en || "Topic"),
+          topic_title_cn: String(item.topic_title_cn || ""),
+          topic_order: Number(item.topic_order || 999),
+          order: Number(item.order || 999),
+          question_en: String(item.question_en || ""),
+          question_cn: String(item.question_cn || "")
+        })).filter((item) => Number.isFinite(item.id) && item.question_en);
+
+        PARTS.forEach((partKey) => sanitizePartState(partKey));
+        loadActivePartState();
       } catch (error) {
         console.error("Failed to load question bank:", error);
         const isFileProtocol = window.location.protocol === "file:";
@@ -1387,10 +1662,12 @@
 
       renderStage();
 
-      if (questionBank.length && shouldAutoStart) {
-        drawNextQuestion({ autoSpeak: true });
+      if (getPartTopics().length && shouldAutoStart && !currentQuestion) {
+        drawTopicAndFirstQuestion({ autoSpeak: true });
         clearAutoStartFlagInUrl();
       }
+
+      saveActivePartState();
     }
 
     async function loadAudioManifest() {
@@ -1399,18 +1676,15 @@
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
         }
-
         const data = await response.json();
         if (data && typeof data === "object" && data.items && typeof data.items === "object") {
           audioManifest = data.items;
           return;
         }
-
         if (data && typeof data === "object") {
           audioManifest = data;
           return;
         }
-
         audioManifest = {};
       } catch (error) {
         console.info("No generated audio manifest detected; fallback to browser TTS.", error);
@@ -1422,50 +1696,40 @@
       if (!currentQuestion) {
         return;
       }
-      speakByRole("topic", currentQuestion.topic_en);
+      speakByRole("topic", currentQuestion.question_en);
     });
 
     btnAction.addEventListener("click", () => {
-      if (!currentQuestion) {
+      if (!currentQuestion || isQuestionVisible) {
         return;
       }
-
-      if (!isQuestionVisible) {
-        isQuestionVisible = true;
-        renderStage();
-        return;
-      }
-
-      if (!isAnswerVisible) {
-        isAnswerVisible = true;
-        renderStage();
-      }
+      isQuestionVisible = true;
+      renderStage();
+      saveActivePartState();
     });
 
     btnNext.addEventListener("click", () => {
-      drawNextQuestion();
+      drawNextQuestion({ autoSpeak: true });
     });
 
     speakSimple.addEventListener("click", () => {
       if (currentQuestion) {
-        speakByRole("simple", currentQuestion.simple_en);
+        speakByRole("topic", currentQuestion.question_en);
       }
     });
 
     speakAdvanced.addEventListener("click", () => {
       if (currentQuestion) {
-        speakByRole("advanced", currentQuestion.advanced_en);
+        speakByRole("topic", currentQuestion.question_en);
       }
     });
 
     speedButtons.forEach((button) => {
       button.addEventListener("click", () => {
         currentRate = Number(button.dataset.rate || "1");
-
         if (currentAudio) {
           currentAudio.playbackRate = currentRate;
         }
-
         speedButtons.forEach((btn) => {
           btn.classList.toggle("active", btn === button);
         });
@@ -1477,7 +1741,6 @@
         event.preventDefault();
         return;
       }
-
       const isOpen = historyDrawer.classList.contains("open");
       if (isOpen) {
         closeDrawer();
@@ -1489,17 +1752,21 @@
     historyClose.addEventListener("click", closeDrawer);
     historyBackdrop.addEventListener("click", closeDrawer);
 
+    partButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        switchPart(normalizePart(button.dataset.part));
+      });
+    });
+
     historyList.addEventListener("click", (event) => {
       const target = event.target.closest("button[data-qid]");
       if (!target) {
         return;
       }
-
       const questionId = Number(target.dataset.qid);
       if (!Number.isFinite(questionId)) {
         return;
       }
-
       jumpToHistoryQuestion(questionId);
     });
 
@@ -1508,6 +1775,9 @@
         closeDrawer();
       }
     });
+
+    renderPartButtons();
+    syncPartInUrl(false);
 
     if ("speechSynthesis" in window) {
       window.speechSynthesis.getVoices();
