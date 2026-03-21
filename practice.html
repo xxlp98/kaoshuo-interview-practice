@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>雅思口语练习</title>
+  <title>考研复试口语练习</title>
   <style>
     @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;800&family=Noto+Serif+SC:wght@600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&family=Sora:wght@600;700;800&display=swap");
 
     :root {
-      --bg: #eceef1;
-      --card: #f8f8fa;
-      --panel: #eff1f4;
-      --text: #2f3338;
-      --muted: #8f949c;
-      --accent: #4950d0;
-      --accent-soft: #dbe0ff;
-      --pink: #e22682;
-      --next-start: #667eea;
-      --next-end: #7c4fbc;
-      --shadow: 0 16px 45px rgba(79, 85, 120, 0.16);
+      --bg: #edf3f4;
+      --card: #fbfdfd;
+      --panel: #f2f6f7;
+      --text: #23323a;
+      --muted: #6f8088;
+      --accent: #2f7a86;
+      --accent-soft: #d9edf0;
+      --pink: #d85d4a;
+      --next-start: #2d8c9d;
+      --next-end: #2f6f89;
+      --shadow: 0 24px 46px rgba(40, 78, 90, 0.18);
       --radius-card: 34px;
       --radius-pill: 999px;
       --btn-height: 76px;
@@ -36,13 +36,14 @@
       min-height: 100vh;
       padding: clamp(12px, 2.2vw, 34px) clamp(10px, 2vw, 20px) clamp(14px, 2.2vw, 24px);
       font-family: var(--font-ui);
+      font-size: 90%;
       text-rendering: optimizeLegibility;
       -webkit-font-smoothing: antialiased;
       color: var(--text);
       background:
-        radial-gradient(circle at 8% 12%, rgba(145, 153, 255, 0.14), transparent 35%),
-        radial-gradient(circle at 90% 78%, rgba(141, 105, 210, 0.13), transparent 30%),
-        var(--bg);
+        radial-gradient(circle at 7% 14%, rgba(98, 169, 183, 0.18), transparent 34%),
+        radial-gradient(circle at 90% 82%, rgba(82, 122, 150, 0.15), transparent 31%),
+        linear-gradient(180deg, #f2f7f7 0%, #edf3f4 100%);
       display: flex;
       justify-content: center;
       align-items: flex-start;
@@ -57,7 +58,9 @@
     .card {
       background: var(--card);
       border-radius: var(--radius-card);
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.8),
+        0 18px 40px rgba(66, 79, 130, 0.12);
       padding: clamp(20px, 2.8vw, 36px) clamp(16px, 3.2vw, 42px) clamp(20px, 2.8vw, 30px);
     }
 
@@ -82,7 +85,12 @@
       white-space: nowrap;
       font-family: var(--font-ui);
       font-size: clamp(0.96rem, 0.6vw + 0.86rem, 1.22rem);
-      font-weight: 500;
+      font-weight: 600;
+      color: #4f6f77;
+      background: #e3eff1;
+      border: 1px solid #c9dfe2;
+      border-radius: 999px;
+      padding: 8px 14px;
     }
 
     .stage {
@@ -114,6 +122,7 @@
       font-size: clamp(0.94rem, 0.76vw + 0.86rem, 1.34rem);
       font-weight: 700;
       letter-spacing: 0.01em;
+      box-shadow: 0 8px 20px rgba(44, 116, 128, 0.18);
     }
 
     .waiting {
@@ -129,12 +138,12 @@
       min-width: clamp(170px, 34vw, 280px);
       min-height: clamp(38px, 5.8vw, 62px);
       padding: 6px clamp(16px, 2.6vw, 28px);
-      background: #cfd5ff;
+      background: #d6ecef;
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
     }
 
     .waiting-sub {
-      color: #5e64eb;
+      color: #2f7a86;
       font-family: var(--font-cn-elegant);
       font-size: clamp(1.26rem, 2.2vw, 2.2rem);
       font-weight: 800;
@@ -178,7 +187,7 @@
     }
 
     .speed {
-      background: #e2e5ea;
+      background: #e4ecee;
       border-radius: 24px;
       padding: 12px 18px;
       display: flex;
@@ -191,7 +200,7 @@
     .speed span {
       font-size: clamp(0.92rem, 0.7vw + 0.76rem, 1.24rem);
       font-weight: 700;
-      color: #6a6f77;
+      color: #5f6d73;
     }
 
     .speed-btn {
@@ -201,8 +210,8 @@
       min-width: 128px;
       font-size: clamp(0.88rem, 0.5vw + 0.74rem, 1.08rem);
       font-weight: 700;
-      color: #626872;
-      background: #f1f2f5;
+      color: #58656c;
+      background: #f1f4f5;
       cursor: pointer;
       transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
     }
@@ -219,15 +228,16 @@
       padding: 22px 20px 18px;
       text-align: left;
       border-left: 8px solid transparent;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.65);
     }
 
     .answer-card.simple {
-      border-left-color: #4e52ce;
+      border-left-color: #2f7a86;
       animation: fade-up 330ms ease-out;
     }
 
     .answer-card.advanced {
-      border-left-color: #e03f98;
+      border-left-color: #d85d4a;
       animation: fade-up 380ms ease-out;
     }
 
@@ -249,8 +259,8 @@
     .speak-btn {
       border: 0;
       border-radius: var(--radius-pill);
-      background: #d7dcff;
-      color: #3f45bf;
+      background: #d9edf0;
+      color: #2d6f79;
       font-size: clamp(0.82rem, 0.5vw + 0.72rem, 1.05rem);
       font-weight: 700;
       padding: 10px 18px;
@@ -259,8 +269,8 @@
     }
 
     .answer-card.advanced .speak-btn {
-      background: #ffd8ea;
-      color: #ca236f;
+      background: #ffdcd5;
+      color: #b44c3f;
     }
 
     .answer-text {
@@ -285,16 +295,16 @@
     .controls {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 18px;
-      margin-top: 30px;
+      gap: 12px;
+      margin-top: 20px;
     }
 
     .btn {
-      height: clamp(52px, 6.4vw, var(--btn-height));
+      height: clamp(46px, 5.6vw, 66px);
       border-radius: var(--radius-pill);
       border: 0;
       cursor: pointer;
-      font-size: clamp(0.94rem, 0.7vw + 0.86rem, 1.18rem);
+      font-size: clamp(0.9rem, 0.55vw + 0.84rem, 1.08rem);
       font-weight: 800;
       transition: transform 0.2s ease, filter 0.2s ease, opacity 0.2s ease;
       font-family: var(--font-ui);
@@ -317,35 +327,41 @@
     }
 
     .btn-replay {
-      background: #f5f5f6;
-      border: 3px solid #d1d3d8;
-      color: #6a6f77;
+      background: #f4f7f8;
+      border: 3px solid #c9d3d7;
+      color: #5d6c74;
+    }
+
+    .btn-pause {
+      background: #eaf1f3;
+      border: 3px solid #c5d6db;
+      color: #4f6a72;
     }
 
     .btn-view {
-      background: #090a10;
+      background: linear-gradient(120deg, #24353f, #16242c);
       color: #fff;
     }
 
     .btn-answer {
-      background: var(--pink);
+      background: linear-gradient(120deg, #e26d58, #c15041);
       color: #fff;
     }
 
     .topic-actions {
-      margin-top: clamp(22px, 2.8vw, 32px);
+      margin-top: clamp(18px, 2.4vw, 26px);
       width: 100%;
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
+      gap: 12px;
     }
 
     .topic-btn {
-      height: clamp(56px, 7.2vw, 84px);
+      height: clamp(50px, 6.4vw, 72px);
       border: 0;
       border-radius: var(--radius-pill);
       color: #fff;
-      font-size: clamp(1rem, 0.72vw + 0.9rem, 1.26rem);
+      font-size: clamp(0.94rem, 0.52vw + 0.88rem, 1.12rem);
       font-weight: 800;
       font-family: var(--font-display);
       box-shadow: var(--shadow);
@@ -370,13 +386,13 @@
     }
 
     .topic-btn-question {
-      background: linear-gradient(95deg, #232734, #2f364a);
+      background: linear-gradient(95deg, #2c3b45, #24323c);
     }
 
     .footer {
       margin: 26px 0 0;
       text-align: center;
-      color: #a5a8ad;
+      color: #84979f;
       font-size: clamp(0.86rem, 0.62vw + 0.74rem, 1.12rem);
       font-weight: 700;
       line-height: 1.4;
@@ -385,7 +401,7 @@
     .footer a {
       color: inherit;
       text-decoration: none;
-      border-bottom: 2px solid rgba(165, 168, 173, 0.55);
+      border-bottom: 2px solid rgba(132, 151, 159, 0.5);
     }
 
     .part-switcher {
@@ -399,16 +415,159 @@
       gap: 8px;
       padding: 10px;
       border-radius: 16px;
-      background: rgba(245, 247, 251, 0.95);
-      border: 1px solid #d8dce6;
+      background: rgba(244, 248, 249, 0.95);
+      border: 1px solid #cfdee2;
       box-shadow: 0 12px 28px rgba(31, 34, 56, 0.13);
       backdrop-filter: blur(5px);
     }
 
+    .topic-status-bar {
+      position: fixed;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: min(248px, 26vw);
+      z-index: 26;
+      padding: 14px 14px 12px;
+      border-radius: 16px;
+      background: rgba(244, 248, 249, 0.96);
+      border: 1px solid #cfdee2;
+      box-shadow: 0 12px 28px rgba(31, 34, 56, 0.13);
+      backdrop-filter: blur(5px);
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      cursor: grab;
+      transition: opacity 0.22s ease, transform 0.22s ease;
+    }
+
+    .topic-status-bar.dragging {
+      cursor: grabbing;
+      box-shadow: 0 16px 34px rgba(31, 34, 56, 0.2);
+    }
+
+    .topic-status-bar.is-hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-120%, -50%);
+    }
+
+    .topic-nav-toggle {
+      position: fixed;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 27;
+      border: 0;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: linear-gradient(120deg, #29424d, #1b3038);
+      color: #fff;
+      font-size: 22px;
+      font-weight: 800;
+      padding: 0;
+      cursor: pointer;
+      box-shadow: 0 12px 28px rgba(31, 34, 56, 0.22);
+      transition: transform 0.2s ease, filter 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      cursor: grab;
+    }
+
+    .topic-nav-toggle:hover {
+      transform: translateY(calc(-50% - 1px));
+      filter: saturate(1.08);
+    }
+
+    .topic-nav-toggle.dragging {
+      cursor: grabbing;
+      box-shadow: 0 16px 34px rgba(31, 34, 56, 0.3);
+    }
+
+    .topic-nav-block {
+      margin-top: 0;
+      padding-top: 0;
+    }
+
+    .topic-nav-title {
+      margin: 0 0 8px;
+      font-family: var(--font-display);
+      font-size: 0.86rem;
+      font-weight: 800;
+      color: #4b6170;
+    }
+
+    .topic-nav-list {
+      max-height: min(52vh, 430px);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding-right: 2px;
+    }
+
+    .topic-nav-item {
+      width: 100%;
+      border: 1px solid #d2dde0;
+      background: #fff;
+      border-radius: 10px;
+      padding: 7px 9px;
+      text-align: left;
+      color: #37515a;
+      cursor: pointer;
+      transition: transform 0.16s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .topic-nav-item:hover {
+      transform: translateX(1px);
+      border-color: #7eb0ba;
+    }
+
+    .topic-nav-item.active {
+      border-color: #2f7a86;
+      box-shadow: inset 0 0 0 1px rgba(47, 122, 134, 0.24);
+      background: #edf7f8;
+    }
+
+    .topic-nav-name {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 800;
+      line-height: 1.3;
+      color: #2d4851;
+    }
+
+    .topic-nav-meta {
+      display: block;
+      margin-top: 2px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #6f8590;
+      line-height: 1.25;
+    }
+
+    .topic-status-label {
+      color: #798196;
+      font-weight: 700;
+      font-family: var(--font-ui);
+    }
+
+    .topic-status-value {
+      color: #37405a;
+      font-weight: 800;
+      word-break: break-word;
+      font-family: var(--font-ui);
+    }
+
     .part-btn {
-      border: 1px solid #cfd5e2;
+      border: 1px solid #c9d7db;
       background: #ffffff;
-      color: #59606d;
+      color: #53666d;
       border-radius: 999px;
       min-width: 80px;
       padding: 8px 12px;
@@ -421,15 +580,15 @@
 
     .part-btn:hover {
       transform: translateX(1px);
-      border-color: #868edf;
-      color: #434cc6;
+      border-color: #7eb0ba;
+      color: #2f7a86;
     }
 
     .part-btn.active {
-      border-color: #545eda;
-      background: linear-gradient(135deg, #5d67e2, #6b53c3);
+      border-color: #2f7a86;
+      background: linear-gradient(135deg, #2d8c9d, #2f6f89);
       color: #fff;
-      box-shadow: 0 8px 20px rgba(82, 90, 196, 0.28);
+      box-shadow: 0 8px 20px rgba(47, 122, 134, 0.28);
     }
 
     .history-toggle {
@@ -439,7 +598,7 @@
       transform: translateY(-50%);
       border: 0;
       border-radius: 999px;
-      background: #11131a;
+      background: #20323b;
       color: #fff;
       font-size: 14px;
       font-weight: 700;
@@ -464,8 +623,8 @@
       right: 0;
       width: min(390px, 90vw);
       height: 100vh;
-      background: #f4f6f9;
-      border-left: 1px solid #d8dce6;
+      background: #f1f6f7;
+      border-left: 1px solid #cfdee2;
       box-shadow: -12px 0 28px rgba(20, 24, 43, 0.16);
       transform: translateX(106%);
       transition: transform 0.25s ease;
@@ -483,23 +642,23 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid #e2e6ef;
+      border-bottom: 1px solid #dbe6e9;
     }
 
     .history-header h2 {
       margin: 0;
       font-size: 22px;
-      color: #31384a;
+      color: #2e4751;
       font-family: var(--font-display);
     }
 
     .history-close {
       border: 0;
-      background: #dfe4f2;
+      background: #dce9ed;
       width: 34px;
       height: 34px;
       border-radius: 50%;
-      color: #4a4f60;
+      color: #3f5b63;
       cursor: pointer;
       font-size: 18px;
       font-weight: 700;
@@ -508,7 +667,7 @@
     .history-tip {
       margin: 10px 18px 0;
       font-size: 13px;
-      color: #7f8695;
+      color: #6f8590;
     }
 
     .history-list {
@@ -522,31 +681,31 @@
     .history-item {
       width: 100%;
       text-align: left;
-      border: 1px solid #dce2ef;
+      border: 1px solid #d2dde0;
       background: #fff;
       border-radius: 14px;
       margin-bottom: 10px;
       padding: 10px 12px;
-      color: #333a48;
+      color: #30434b;
       cursor: pointer;
       transition: transform 0.15s ease, border-color 0.2s ease;
     }
 
     .history-item:hover {
       transform: translateX(-2px);
-      border-color: #9098df;
+      border-color: #7eb0ba;
     }
 
     .history-item.active {
-      border-color: #4f57d7;
-      box-shadow: inset 0 0 0 1px rgba(79, 87, 215, 0.25);
-      background: #f2f4ff;
+      border-color: #2f7a86;
+      box-shadow: inset 0 0 0 1px rgba(47, 122, 134, 0.25);
+      background: #edf7f8;
     }
 
     .history-qid {
       display: block;
       font-size: 12px;
-      color: #5963cc;
+      color: #2f7a86;
       font-family: var(--font-display);
       margin-bottom: 4px;
       font-weight: 700;
@@ -556,13 +715,13 @@
       display: block;
       font-size: 13px;
       line-height: 1.4;
-      color: #343948;
+      color: #314750;
     }
 
     .history-empty {
-      border: 1px dashed #cfd5e4;
+      border: 1px dashed #c9d7db;
       border-radius: 12px;
-      color: #818a9b;
+      color: #738993;
       padding: 14px;
       text-align: center;
       font-size: 13px;
@@ -710,13 +869,13 @@
 
       .controls {
         grid-template-columns: 1fr;
-        gap: 14px;
+        gap: 11px;
       }
 
       .btn,
       .topic-btn {
-        height: 52px;
-        font-size: 1rem;
+        height: 46px;
+        font-size: 0.94rem;
       }
 
       .topic-actions {
@@ -741,6 +900,54 @@
         width: min(360px, 92vw);
       }
 
+      .topic-status-bar {
+        position: static;
+        transform: none;
+        width: 100%;
+        margin-bottom: 10px;
+        padding: 10px 12px;
+        border-radius: 14px;
+      }
+
+      .topic-status-bar.is-hidden {
+        transform: none;
+      }
+
+      .topic-nav-toggle {
+        left: 12px;
+        top: auto;
+        bottom: 84px;
+        transform: none;
+        width: 42px;
+        height: 42px;
+        font-size: 20px;
+      }
+
+      .topic-nav-toggle:hover {
+        transform: translateY(-1px);
+      }
+
+      .topic-nav-block {
+        margin-top: 0;
+        padding-top: 0;
+      }
+
+      .topic-nav-list {
+        max-height: 220px;
+      }
+
+      .topic-nav-item {
+        padding: 7px 8px;
+      }
+
+      .topic-nav-name {
+        font-size: 0.76rem;
+      }
+
+      .topic-nav-meta {
+        font-size: 0.7rem;
+      }
+
       .part-switcher {
         left: 10px;
         top: auto;
@@ -760,10 +967,19 @@
   </style>
 </head>
 <body>
+  <button class="topic-nav-toggle" id="topicNavToggle" type="button" aria-label="切换话题侧边栏" title="切换话题侧边栏">☰</button>
+
+  <aside class="topic-status-bar" id="topicStatusBar" aria-live="polite">
+    <section class="topic-nav-block">
+      <h4 class="topic-nav-title">全部话题（可切换）</h4>
+      <div class="topic-nav-list" id="topicNavList"></div>
+    </section>
+  </aside>
+
   <div class="app">
     <section class="card">
       <header class="top">
-        <div class="title">雅思口语练习</div>
+        <div class="title">考研复试口语练习</div>
         <div class="remaining" id="remaining">剩余未抽：0个话题</div>
       </header>
 
@@ -809,6 +1025,7 @@
 
       <div class="controls">
         <button class="btn btn-replay" id="btnReplay" type="button">🔁 再听一遍</button>
+        <button class="btn btn-pause" id="btnPause" type="button" disabled>⏸️ 暂停播放</button>
         <button class="btn btn-view" id="btnAction" type="button">👀 查看题目</button>
       </div>
     </section>
@@ -819,17 +1036,11 @@
     </div>
 
     <footer class="footer">
-      © <a href="#" aria-label="cici雅思资料库">cici雅思资料库</a> | 雅思口语高分上岸
+      © <a href="#" aria-label="cici雅思资料库">cici雅思资料库</a> | 考研复试口语上岸
     </footer>
   </div>
 
   <button class="history-toggle" id="historyToggle" type="button">🗂 练习记录</button>
-
-  <nav class="part-switcher" aria-label="选择口语Part">
-    <button class="part-btn active" data-part="part1" type="button">Part 1</button>
-    <button class="part-btn" data-part="part2" type="button">Part 2</button>
-    <button class="part-btn" data-part="part3" type="button">Part 3</button>
-  </nav>
 
   <aside class="history-drawer" id="historyDrawer" aria-hidden="true">
     <div class="history-header">
@@ -848,11 +1059,10 @@
     const AUDIO_MANIFEST_PATH = "./audio-manifest.json";
     const urlParams = new URLSearchParams(window.location.search);
     const shouldAutoStart = urlParams.get("autostart") === "1";
-    const PARTS = ["part1", "part2", "part3"];
+    const INTEGRATED_BANK_KEY = "all";
+    const PARTS = [INTEGRATED_BANK_KEY];
     const PART_LABELS = {
-      part1: "Part 1",
-      part2: "Part 2",
-      part3: "Part 3"
+      [INTEGRATED_BANK_KEY]: "考研复试综合题库"
     };
 
     const stageEl = document.getElementById("stage");
@@ -868,6 +1078,7 @@
     const advancedEn = document.getElementById("advancedEn");
     const advancedCn = document.getElementById("advancedCn");
     const btnReplay = document.getElementById("btnReplay");
+    const btnPause = document.getElementById("btnPause");
     const btnAction = document.getElementById("btnAction");
     const btnDrawTopic = document.getElementById("btnDrawTopic");
     const btnDrawQuestion = document.getElementById("btnDrawQuestion");
@@ -879,8 +1090,10 @@
     const historyBackdrop = document.getElementById("historyBackdrop");
     const historyList = document.getElementById("historyList");
     const historyTip = document.querySelector(".history-tip");
+    const topicStatusBar = document.getElementById("topicStatusBar");
+    const topicNavToggle = document.getElementById("topicNavToggle");
+    const topicNavList = document.getElementById("topicNavList");
     const partButtons = Array.from(document.querySelectorAll(".part-btn"));
-
     const speedButtons = Array.from(document.querySelectorAll(".speed-btn"));
 
     let questionBank = [];
@@ -895,16 +1108,44 @@
     let currentRate = 1;
     let audioManifest = {};
     let currentAudio = null;
-    let activePart = normalizePart(urlParams.get("part"));
+    let speechMonitorTimer = null;
+    let activePart = INTEGRATED_BANK_KEY;
 
     const HISTORY_TOGGLE_POS_KEY = "ielts-history-toggle-pos";
+    const TOPIC_NAV_POS_KEY = "exam-topic-nav-pos";
+    const TOPIC_NAV_TOGGLE_POS_KEY = "exam-topic-nav-toggle-pos";
+    const TOPIC_NAV_OPEN_KEY = "exam-topic-nav-open";
+    const TOPIC_NAV_AUTO_HIDE_MS = 5000;
     const partStates = {
-      part1: createPartState(),
-      part2: createPartState(),
-      part3: createPartState()
+      [INTEGRATED_BANK_KEY]: createPartState()
     };
 
+    let isTopicNavOpen = false;
+    let topicNavAutoHideTimer = null;
+
     const dragState = {
+      pointerId: null,
+      startX: 0,
+      startY: 0,
+      originLeft: 0,
+      originTop: 0,
+      moved: false,
+      justDragged: false,
+      inited: false
+    };
+
+    const topicNavDragState = {
+      pointerId: null,
+      startX: 0,
+      startY: 0,
+      originLeft: 0,
+      originTop: 0,
+      moved: false,
+      justDragged: false,
+      inited: false
+    };
+
+    const topicNavToggleDragState = {
       pointerId: null,
       startX: 0,
       startY: 0,
@@ -928,22 +1169,15 @@
     }
 
     function normalizePart(value) {
-      const raw = String(value || "").trim().toLowerCase();
-      if (raw === "part2" || raw === "part 2" || raw === "2") {
-        return "part2";
-      }
-      if (raw === "part3" || raw === "part 3" || raw === "3") {
-        return "part3";
-      }
-      return "part1";
+      return INTEGRATED_BANK_KEY;
     }
 
     function getPartLabel(partKey) {
-      return PART_LABELS[partKey] || "Part 1";
+      return PART_LABELS[partKey] || "考研复试综合题库";
     }
 
     function getPartQuestions(partKey = activePart) {
-      return questionBank.filter((item) => item.part === partKey);
+      return questionBank;
     }
 
     function getPartTopics(partKey = activePart) {
@@ -975,13 +1209,10 @@
     }
 
     function syncHistoryTip() {
-      historyTip.textContent = `当前 ${getPartLabel(activePart)} 练习记录，点击任意问题可快速跳转`;
+      historyTip.textContent = "当前综合题库练习记录，点击任意问题可快速跳转";
     }
 
     function renderPartButtons() {
-      partButtons.forEach((button) => {
-        button.classList.toggle("active", button.dataset.part === activePart);
-      });
       syncHistoryTip();
     }
 
@@ -1048,7 +1279,7 @@
         return;
       }
       const params = new URLSearchParams(window.location.search);
-      params.set("part", activePart);
+      params.delete("part");
       if (removeAutoStart) {
         params.delete("autostart");
       }
@@ -1115,6 +1346,343 @@
       historyToggle.style.right = "auto";
       historyToggle.style.bottom = "auto";
       historyToggle.style.transform = "none";
+    }
+
+    function saveTopicNavPosition(left, top) {
+      try {
+        window.localStorage.setItem(TOPIC_NAV_POS_KEY, JSON.stringify({ left, top }));
+      } catch (error) {
+        console.info("Failed to persist topic nav position:", error);
+      }
+    }
+
+    function saveTopicNavTogglePosition(left, top) {
+      try {
+        window.localStorage.setItem(TOPIC_NAV_TOGGLE_POS_KEY, JSON.stringify({ left, top }));
+      } catch (error) {
+        console.info("Failed to persist topic nav toggle position:", error);
+      }
+    }
+
+    function saveTopicNavOpenState(isOpen) {
+      try {
+        window.localStorage.setItem(TOPIC_NAV_OPEN_KEY, isOpen ? "1" : "0");
+      } catch (error) {
+        console.info("Failed to persist topic nav open state:", error);
+      }
+    }
+
+    function loadTopicNavOpenState() {
+      try {
+        const raw = window.localStorage.getItem(TOPIC_NAV_OPEN_KEY);
+        if (raw === "1") {
+          return true;
+        }
+        if (raw === "0") {
+          return false;
+        }
+        return false;
+      } catch (_error) {
+        return false;
+      }
+    }
+
+    function loadTopicNavPosition() {
+      try {
+        const raw = window.localStorage.getItem(TOPIC_NAV_POS_KEY);
+        if (!raw) {
+          return null;
+        }
+        const parsed = JSON.parse(raw);
+        if (!parsed || !Number.isFinite(parsed.left) || !Number.isFinite(parsed.top)) {
+          return null;
+        }
+        return parsed;
+      } catch (_error) {
+        return null;
+      }
+    }
+
+    function loadTopicNavTogglePosition() {
+      try {
+        const raw = window.localStorage.getItem(TOPIC_NAV_TOGGLE_POS_KEY);
+        if (!raw) {
+          return null;
+        }
+        const parsed = JSON.parse(raw);
+        if (!parsed || !Number.isFinite(parsed.left) || !Number.isFinite(parsed.top)) {
+          return null;
+        }
+        return parsed;
+      } catch (_error) {
+        return null;
+      }
+    }
+
+    function applyTopicNavPosition(left, top) {
+      const gap = 8;
+      const maxLeft = window.innerWidth - topicStatusBar.offsetWidth - gap;
+      const maxTop = window.innerHeight - topicStatusBar.offsetHeight - gap;
+      topicStatusBar.style.left = `${clamp(left, gap, Math.max(gap, maxLeft))}px`;
+      topicStatusBar.style.top = `${clamp(top, gap, Math.max(gap, maxTop))}px`;
+      topicStatusBar.style.right = "auto";
+      topicStatusBar.style.bottom = "auto";
+      topicStatusBar.style.transform = "none";
+    }
+
+    function applyTopicNavTogglePosition(left, top) {
+      const gap = 8;
+      const maxLeft = window.innerWidth - topicNavToggle.offsetWidth - gap;
+      const maxTop = window.innerHeight - topicNavToggle.offsetHeight - gap;
+      topicNavToggle.style.left = `${clamp(left, gap, Math.max(gap, maxLeft))}px`;
+      topicNavToggle.style.top = `${clamp(top, gap, Math.max(gap, maxTop))}px`;
+      topicNavToggle.style.right = "auto";
+      topicNavToggle.style.bottom = "auto";
+      topicNavToggle.style.transform = "none";
+    }
+
+    function ensureTopicNavPosition() {
+      if (window.matchMedia("(max-width: 860px)").matches) {
+        return;
+      }
+      if (topicNavDragState.inited) {
+        return;
+      }
+      const saved = loadTopicNavPosition();
+      if (saved) {
+        applyTopicNavPosition(saved.left, saved.top);
+      } else {
+        const rect = topicStatusBar.getBoundingClientRect();
+        applyTopicNavPosition(rect.left, rect.top);
+      }
+      topicNavDragState.inited = true;
+    }
+
+    function ensureTopicNavTogglePosition() {
+      if (topicNavToggleDragState.inited) {
+        return;
+      }
+      const saved = loadTopicNavTogglePosition();
+      if (saved) {
+        applyTopicNavTogglePosition(saved.left, saved.top);
+      } else {
+        const rect = topicNavToggle.getBoundingClientRect();
+        applyTopicNavTogglePosition(rect.left, rect.top);
+      }
+      topicNavToggleDragState.inited = true;
+    }
+
+    function endTopicNavDrag(pointerId) {
+      if (topicNavDragState.pointerId !== pointerId) {
+        return;
+      }
+      if (topicNavDragState.moved) {
+        const rect = topicStatusBar.getBoundingClientRect();
+        saveTopicNavPosition(rect.left, rect.top);
+        topicNavDragState.justDragged = true;
+        window.setTimeout(() => {
+          topicNavDragState.justDragged = false;
+        }, 0);
+      }
+      try {
+        topicStatusBar.releasePointerCapture(pointerId);
+      } catch (_error) {
+        // ignore
+      }
+      topicNavDragState.pointerId = null;
+      topicStatusBar.classList.remove("dragging");
+    }
+
+    function initTopicNavDrag() {
+      if (window.matchMedia("(max-width: 860px)").matches) {
+        return;
+      }
+
+      ensureTopicNavPosition();
+
+      topicStatusBar.addEventListener("pointerdown", (event) => {
+        if (event.target && event.target.closest(".topic-nav-list")) {
+          return;
+        }
+        if (event.pointerType === "mouse" && event.button !== 0) {
+          return;
+        }
+        ensureTopicNavPosition();
+        const rect = topicStatusBar.getBoundingClientRect();
+        topicNavDragState.pointerId = event.pointerId;
+        topicNavDragState.startX = event.clientX;
+        topicNavDragState.startY = event.clientY;
+        topicNavDragState.originLeft = rect.left;
+        topicNavDragState.originTop = rect.top;
+        topicNavDragState.moved = false;
+        topicStatusBar.setPointerCapture(event.pointerId);
+        topicStatusBar.classList.add("dragging");
+        resetTopicNavAutoHide();
+        event.preventDefault();
+      });
+
+      topicStatusBar.addEventListener("pointermove", (event) => {
+        if (topicNavDragState.pointerId !== event.pointerId) {
+          return;
+        }
+        const deltaX = event.clientX - topicNavDragState.startX;
+        const deltaY = event.clientY - topicNavDragState.startY;
+        if (!topicNavDragState.moved && (Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3)) {
+          topicNavDragState.moved = true;
+        }
+        applyTopicNavPosition(topicNavDragState.originLeft + deltaX, topicNavDragState.originTop + deltaY);
+      });
+
+      topicStatusBar.addEventListener("pointerup", (event) => {
+        endTopicNavDrag(event.pointerId);
+      });
+      topicStatusBar.addEventListener("pointercancel", (event) => {
+        endTopicNavDrag(event.pointerId);
+      });
+
+      window.addEventListener("resize", () => {
+        if (window.matchMedia("(max-width: 860px)").matches) {
+          return;
+        }
+        ensureTopicNavPosition();
+        const rect = topicStatusBar.getBoundingClientRect();
+        applyTopicNavPosition(rect.left, rect.top);
+      });
+    }
+
+    function endTopicNavToggleDrag(pointerId) {
+      if (topicNavToggleDragState.pointerId !== pointerId) {
+        return;
+      }
+      if (topicNavToggleDragState.moved) {
+        const rect = topicNavToggle.getBoundingClientRect();
+        saveTopicNavTogglePosition(rect.left, rect.top);
+        topicNavToggleDragState.justDragged = true;
+        window.setTimeout(() => {
+          topicNavToggleDragState.justDragged = false;
+        }, 0);
+      }
+      try {
+        topicNavToggle.releasePointerCapture(pointerId);
+      } catch (_error) {
+        // ignore
+      }
+      topicNavToggleDragState.pointerId = null;
+      topicNavToggle.classList.remove("dragging");
+    }
+
+    function initTopicNavToggleDrag() {
+      ensureTopicNavTogglePosition();
+
+      topicNavToggle.addEventListener("pointerdown", (event) => {
+        if (event.pointerType === "mouse" && event.button !== 0) {
+          return;
+        }
+        ensureTopicNavTogglePosition();
+        const rect = topicNavToggle.getBoundingClientRect();
+        topicNavToggleDragState.pointerId = event.pointerId;
+        topicNavToggleDragState.startX = event.clientX;
+        topicNavToggleDragState.startY = event.clientY;
+        topicNavToggleDragState.originLeft = rect.left;
+        topicNavToggleDragState.originTop = rect.top;
+        topicNavToggleDragState.moved = false;
+        topicNavToggle.setPointerCapture(event.pointerId);
+        topicNavToggle.classList.add("dragging");
+        event.preventDefault();
+      });
+
+      topicNavToggle.addEventListener("pointermove", (event) => {
+        if (topicNavToggleDragState.pointerId !== event.pointerId) {
+          return;
+        }
+        const deltaX = event.clientX - topicNavToggleDragState.startX;
+        const deltaY = event.clientY - topicNavToggleDragState.startY;
+        if (!topicNavToggleDragState.moved && (Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3)) {
+          topicNavToggleDragState.moved = true;
+        }
+        applyTopicNavTogglePosition(topicNavToggleDragState.originLeft + deltaX, topicNavToggleDragState.originTop + deltaY);
+      });
+
+      topicNavToggle.addEventListener("pointerup", (event) => {
+        endTopicNavToggleDrag(event.pointerId);
+      });
+      topicNavToggle.addEventListener("pointercancel", (event) => {
+        endTopicNavToggleDrag(event.pointerId);
+      });
+
+      window.addEventListener("resize", () => {
+        ensureTopicNavTogglePosition();
+        const rect = topicNavToggle.getBoundingClientRect();
+        applyTopicNavTogglePosition(rect.left, rect.top);
+      });
+    }
+
+    function clearTopicNavAutoHide() {
+      if (!topicNavAutoHideTimer) {
+        return;
+      }
+      window.clearTimeout(topicNavAutoHideTimer);
+      topicNavAutoHideTimer = null;
+    }
+
+    function setTopicNavVisible(visible, options = {}) {
+      const { persist = true } = options;
+      isTopicNavOpen = visible;
+      topicStatusBar.classList.toggle("is-hidden", !visible);
+      topicNavToggle.setAttribute("aria-label", visible ? "收起话题侧边栏" : "展开话题侧边栏");
+      topicNavToggle.title = visible ? "收起话题侧边栏" : "展开话题侧边栏";
+
+      if (persist) {
+        saveTopicNavOpenState(visible);
+      }
+
+      if (!visible) {
+        clearTopicNavAutoHide();
+      } else {
+        resetTopicNavAutoHide();
+      }
+    }
+
+    function resetTopicNavAutoHide() {
+      if (!isTopicNavOpen) {
+        return;
+      }
+      clearTopicNavAutoHide();
+      topicNavAutoHideTimer = window.setTimeout(() => {
+        setTopicNavVisible(false);
+      }, TOPIC_NAV_AUTO_HIDE_MS);
+    }
+
+    function initTopicNavVisibility() {
+      const savedOpen = loadTopicNavOpenState();
+      setTopicNavVisible(savedOpen, { persist: false });
+
+      topicNavToggle.addEventListener("click", (event) => {
+        if (topicNavToggleDragState.justDragged) {
+          event.preventDefault();
+          return;
+        }
+        setTopicNavVisible(!isTopicNavOpen);
+      });
+
+      topicStatusBar.addEventListener("pointerdown", () => {
+        resetTopicNavAutoHide();
+      });
+      topicStatusBar.addEventListener("pointermove", () => {
+        if (isTopicNavOpen) {
+          resetTopicNavAutoHide();
+        }
+      });
+
+      document.addEventListener("click", (event) => {
+        if (!isTopicNavOpen) {
+          return;
+        }
+        if (topicStatusBar.contains(event.target) || topicNavToggle.contains(event.target)) {
+          return;
+        }
+        setTopicNavVisible(false);
+      });
     }
 
     function ensureHistoryTogglePosition() {
@@ -1279,6 +1847,7 @@
       currentAudio.pause();
       currentAudio.currentTime = 0;
       currentAudio = null;
+      syncPauseButtonState();
     }
 
     function stopAnyPlayback() {
@@ -1286,6 +1855,48 @@
       if ("speechSynthesis" in window) {
         window.speechSynthesis.cancel();
       }
+      stopSpeechMonitor();
+      syncPauseButtonState();
+    }
+
+    function stopSpeechMonitor() {
+      if (!speechMonitorTimer) {
+        return;
+      }
+      window.clearInterval(speechMonitorTimer);
+      speechMonitorTimer = null;
+    }
+
+    function startSpeechMonitor() {
+      if (!("speechSynthesis" in window)) {
+        return;
+      }
+      stopSpeechMonitor();
+      speechMonitorTimer = window.setInterval(() => {
+        const hasSpeech = window.speechSynthesis.speaking || window.speechSynthesis.paused;
+        syncPauseButtonState();
+        if (!hasSpeech) {
+          stopSpeechMonitor();
+        }
+      }, 160);
+    }
+
+    function syncPauseButtonState() {
+      const hasAudio = Boolean(currentAudio);
+      const hasSpeech = "speechSynthesis" in window && (window.speechSynthesis.speaking || window.speechSynthesis.paused);
+      const hasPlayback = hasAudio || hasSpeech;
+
+      btnPause.disabled = !hasPlayback;
+      if (!hasPlayback) {
+        btnPause.textContent = "⏸️ 暂停播放";
+        return;
+      }
+
+      const isPaused = hasAudio
+        ? currentAudio.paused
+        : ("speechSynthesis" in window && window.speechSynthesis.paused);
+
+      btnPause.textContent = isPaused ? "▶️ 继续播放" : "⏸️ 暂停播放";
     }
 
     function getAudioPath(questionId, role) {
@@ -1307,35 +1918,44 @@
       audio.preload = "auto";
       audio.playbackRate = currentRate;
       currentAudio = audio;
+      audio.onplay = () => syncPauseButtonState();
+      audio.onpause = () => syncPauseButtonState();
       try {
         await audio.play();
         audio.onended = () => {
           if (currentAudio === audio) {
             currentAudio = null;
           }
+          syncPauseButtonState();
         };
+        syncPauseButtonState();
         return true;
       } catch (error) {
         console.warn("Failed to play generated audio:", error);
         if (currentAudio === audio) {
           currentAudio = null;
         }
+        syncPauseButtonState();
         return false;
       }
     }
 
-    async function speakByRole(role, fallbackText) {
+    async function speakByRole(role, fallbackText, options = {}) {
+      const { allowTtsFallback = true } = options;
       if (currentQuestion) {
         const played = await playGeneratedAudio(currentQuestion.id, role);
         if (played) {
           return;
         }
       }
-      speakText(fallbackText);
+      if (allowTtsFallback) {
+        speakText(fallbackText);
+      }
     }
 
     function speakText(text) {
-      if (!text) {
+      const normalizedText = cleanDisplayText(text);
+      if (!normalizedText) {
         return;
       }
       if (!("speechSynthesis" in window)) {
@@ -1343,7 +1963,7 @@
         return;
       }
       const preferredVoice = pickPreferredEnglishVoice();
-      const chunks = splitIntoSpeechChunks(text);
+      const chunks = splitIntoSpeechChunks(normalizedText);
       if (!chunks.length) {
         return;
       }
@@ -1360,6 +1980,8 @@
         }
         window.speechSynthesis.speak(utterance);
       });
+      startSpeechMonitor();
+      syncPauseButtonState();
     }
 
     function updateRemaining() {
@@ -1388,6 +2010,90 @@
       btnAction.textContent = "💡 用口语回答";
       btnAction.classList.add("btn-answer");
       btnAction.disabled = isAnswerVisible;
+    }
+
+    function cleanDisplayText(value) {
+      return String(value || "")
+        .replace(/\*\*(.*?)\*\*/g, "$1")
+        .replace(/\*(.*?)\*/g, "$1")
+        .replace(/`([^`]+)`/g, "$1")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function renderInlineMarkdown(value) {
+      const escaped = escapeHtml(value).replace(/\r?\n/g, "<br>");
+      return escaped
+        .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+        .replace(/\*(.+?)\*/g, "<em>$1</em>")
+        .replace(/`([^`]+)`/g, "<code>$1</code>");
+    }
+
+    function renderTopicNavigator() {
+      const topics = getPartTopics();
+      topicNavList.innerHTML = "";
+
+      if (!topics.length) {
+        const empty = document.createElement("div");
+        empty.className = "history-empty";
+        empty.textContent = "暂无话题";
+        topicNavList.appendChild(empty);
+        return;
+      }
+
+      topics.forEach((topic, index) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "topic-nav-item";
+        btn.dataset.topicId = topic.topic_id;
+        if (currentTopicId === topic.topic_id) {
+          btn.classList.add("active");
+        }
+
+        const name = document.createElement("span");
+        name.className = "topic-nav-name";
+        name.textContent = `${index + 1}. ${topic.topic_title_cn || topic.topic_title_en}`;
+
+        const meta = document.createElement("span");
+        meta.className = "topic-nav-meta";
+        meta.textContent = `${topic.topic_title_en} · ${topic.questions.length}题`;
+
+        btn.appendChild(name);
+        btn.appendChild(meta);
+        topicNavList.appendChild(btn);
+      });
+    }
+
+    function switchToTopic(topicId) {
+      const topic = getTopicById(topicId);
+      if (!topic || !topic.questions.length) {
+        return;
+      }
+
+      if (currentQuestion && currentQuestion.topic_id === topic.topic_id) {
+        renderStage();
+        return;
+      }
+
+      const lastInHistory = practiceHistoryQuestionIds
+        .map((id) => findQuestionById(id))
+        .find((question) => question && question.topic_id === topic.topic_id);
+
+      const targetQuestion = lastInHistory || topic.questions[0];
+      setCurrentQuestion(topic, targetQuestion, {
+        autoSpeak: true,
+        hideQuestion: true,
+        allowTtsFallback: true
+      });
     }
 
     function getAnswerBundle(question) {
@@ -1446,12 +2152,12 @@
       const topic = getTopicById(currentTopicId);
       const answer = getAnswerBundle(currentQuestion);
       questionPill.textContent = `${getPartLabel(activePart)} · ${topic ? topic.topic_title_en : "Topic"}`;
-      questionEn.textContent = `Q${currentQuestion.order}. ${currentQuestion.question_en}`;
-      questionCn.textContent = `💡 ${currentQuestion.question_cn}`;
-      simpleEn.textContent = `A1: ${answer.simple_en}`;
-      simpleCn.textContent = `中文翻译：${answer.simple_cn}`;
-      advancedEn.textContent = `A2: ${answer.advanced_en}`;
-      advancedCn.textContent = `中文翻译：${answer.advanced_cn}`;
+      questionEn.innerHTML = `Q${currentQuestion.order}. ${renderInlineMarkdown(currentQuestion.question_en)}`;
+      questionCn.innerHTML = `💡 ${renderInlineMarkdown(currentQuestion.question_cn)}`;
+      simpleEn.innerHTML = `A1: ${renderInlineMarkdown(answer.simple_en)}`;
+      simpleCn.innerHTML = `中文翻译：${renderInlineMarkdown(answer.simple_cn)}`;
+      advancedEn.innerHTML = `A2: ${renderInlineMarkdown(answer.advanced_en)}`;
+      advancedCn.innerHTML = `中文翻译：${renderInlineMarkdown(answer.advanced_cn)}`;
     }
 
     function renderHistoryList() {
@@ -1500,6 +2206,7 @@
       const isCompactStage = !currentQuestion || (!isQuestionVisible && !isAnswerVisible);
       stageEl.classList.toggle("compact", isCompactStage);
       updateTopicButtonsState();
+      renderTopicNavigator();
 
       if (!currentQuestion) {
         waitingBox.classList.remove("hidden");
@@ -1573,7 +2280,7 @@
     }
 
     function setCurrentQuestion(topic, question, options = {}) {
-      const { autoSpeak = true, hideQuestion = true } = options;
+      const { autoSpeak = true, hideQuestion = true, allowTtsFallback = true } = options;
       currentTopicId = topic.topic_id;
       currentQuestion = question;
       if (!drawnTopicIds.includes(topic.topic_id)) {
@@ -1587,7 +2294,7 @@
 
       if (autoSpeak) {
         window.setTimeout(() => {
-          speakByRole("topic", question.question_en);
+          speakByRole("topic", question.question_en, { allowTtsFallback });
         }, 120);
       }
 
@@ -1595,11 +2302,11 @@
     }
 
     function drawTopicAndFirstQuestion(options = {}) {
-      const { autoSpeak = true } = options;
+      const { autoSpeak = true, allowTtsFallback = true } = options;
       const topics = getPartTopics();
 
       if (!topics.length) {
-        window.alert(`${getPartLabel(activePart)} 暂无话题，请先补充该 Part 题库。`);
+        window.alert("综合题库暂无话题，请先补充题库内容。");
         return;
       }
 
@@ -1619,6 +2326,7 @@
 
       setCurrentQuestion(topic, firstQuestion, {
         autoSpeak,
+        allowTtsFallback,
         hideQuestion: true
       });
     }
@@ -1628,7 +2336,7 @@
       const topics = getPartTopics();
 
       if (!topics.length) {
-        window.alert(`${getPartLabel(activePart)} 暂无话题，请先补充该 Part 题库。`);
+        window.alert("综合题库暂无话题，请先补充题库内容。");
         return;
       }
 
@@ -1694,7 +2402,7 @@
 
         questionBank = data.map((item, index) => ({
           id: Number(item.id),
-          part: normalizePart(item.part),
+          part: INTEGRATED_BANK_KEY,
           topic_id: String(item.topic_id || `topic-${index + 1}`),
           topic_title_en: String(item.topic_title_en || "Topic"),
           topic_title_cn: String(item.topic_title_cn || ""),
@@ -1729,7 +2437,7 @@
       renderStage();
 
       if (getPartTopics().length && shouldAutoStart && !currentQuestion) {
-        drawTopicAndFirstQuestion({ autoSpeak: true });
+        drawTopicAndFirstQuestion({ autoSpeak: true, allowTtsFallback: false });
         clearAutoStartFlagInUrl();
       }
 
@@ -1803,6 +2511,34 @@
         return;
       }
       speakByRole("topic", currentQuestion.question_en);
+    });
+
+    btnPause.addEventListener("click", async () => {
+      if (currentAudio) {
+        if (currentAudio.paused) {
+          try {
+            await currentAudio.play();
+          } catch (error) {
+            console.warn("Failed to resume audio:", error);
+          }
+        } else {
+          currentAudio.pause();
+        }
+        syncPauseButtonState();
+        return;
+      }
+
+      if (!("speechSynthesis" in window)) {
+        return;
+      }
+
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+      } else if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.pause();
+      }
+      startSpeechMonitor();
+      syncPauseButtonState();
     });
 
     btnAction.addEventListener("click", () => {
@@ -1892,6 +2628,23 @@
       jumpToHistoryQuestion(questionId);
     });
 
+    topicNavList.addEventListener("click", (event) => {
+      if (topicNavDragState.justDragged) {
+        event.preventDefault();
+        return;
+      }
+      const target = event.target.closest("button[data-topic-id]");
+      if (!target) {
+        return;
+      }
+      const topicId = String(target.dataset.topicId || "");
+      if (!topicId) {
+        return;
+      }
+      resetTopicNavAutoHide();
+      switchToTopic(topicId);
+    });
+
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape" && historyDrawer.classList.contains("open")) {
         closeDrawer();
@@ -1906,7 +2659,10 @@
     }
 
     renderStage();
+    initTopicNavVisibility();
+    initTopicNavToggleDrag();
     initHistoryToggleDrag();
+    initTopicNavDrag();
     Promise.all([loadAudioManifest(), loadAnswerBank()]).then(() => {
       loadQuestionBank();
     });

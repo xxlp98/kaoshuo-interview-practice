@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>雅思口语练习 - 起始页</title>
+  <title>考研复试口语练习 - 起始页</title>
   <style>
     @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;800&family=Noto+Serif+SC:wght@600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&family=Sora:wght@600;700;800&display=swap");
 
     :root {
-      --bg: #eceef1;
-      --card: #f8f8fa;
-      --text: #2f3338;
-      --muted: #8f949c;
-      --accent: #4950d0;
-      --accent-soft: #dbe0ff;
-      --next-start: #667eea;
-      --next-end: #7c4fbc;
-      --shadow: 0 16px 45px rgba(79, 85, 120, 0.16);
+      --bg: #edf3f4;
+      --card: #fbfdfd;
+      --text: #23323a;
+      --muted: #6f8088;
+      --accent: #2f7a86;
+      --accent-soft: #d9edf0;
+      --next-start: #2d8c9d;
+      --next-end: #2f6f89;
+      --shadow: 0 24px 46px rgba(40, 78, 90, 0.18);
       --radius-card: 34px;
       --radius-pill: 999px;
       --font-ui: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", sans-serif;
@@ -33,13 +33,14 @@
       min-height: 100vh;
       padding: clamp(12px, 2.2vw, 34px) clamp(10px, 2vw, 20px) clamp(14px, 2.2vw, 24px);
       font-family: var(--font-ui);
+      font-size: 90%;
       text-rendering: optimizeLegibility;
       -webkit-font-smoothing: antialiased;
       color: var(--text);
       background:
-        radial-gradient(circle at 8% 12%, rgba(145, 153, 255, 0.14), transparent 35%),
-        radial-gradient(circle at 90% 78%, rgba(141, 105, 210, 0.13), transparent 30%),
-        var(--bg);
+        radial-gradient(circle at 7% 14%, rgba(98, 169, 183, 0.18), transparent 34%),
+        radial-gradient(circle at 90% 82%, rgba(82, 122, 150, 0.15), transparent 31%),
+        linear-gradient(180deg, #f2f7f7 0%, #edf3f4 100%);
       display: flex;
       justify-content: center;
       align-items: flex-start;
@@ -54,7 +55,9 @@
     .card {
       background: var(--card);
       border-radius: var(--radius-card);
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.8),
+        0 18px 40px rgba(66, 79, 130, 0.12);
       padding: clamp(20px, 2.8vw, 36px) clamp(16px, 3.2vw, 42px) clamp(20px, 2.8vw, 30px);
     }
 
@@ -79,7 +82,12 @@
       white-space: nowrap;
       font-family: var(--font-ui);
       font-size: clamp(0.96rem, 0.6vw + 0.86rem, 1.22rem);
-      font-weight: 500;
+      font-weight: 600;
+      color: #4f6f77;
+      background: #e3eff1;
+      border: 1px solid #c9dfe2;
+      border-radius: 999px;
+      padding: 8px 14px;
     }
 
     .stage {
@@ -107,10 +115,18 @@
       font-size: clamp(0.94rem, 0.76vw + 0.86rem, 1.34rem);
       font-weight: 700;
       letter-spacing: 0.01em;
+      box-shadow: 0 8px 20px rgba(44, 116, 128, 0.18);
+    }
+
+    .hero-note {
+      margin: 2px 0 0;
+      color: #61777f;
+      font-size: clamp(0.92rem, 0.68vw + 0.82rem, 1.14rem);
+      font-weight: 700;
     }
 
     .waiting-sub {
-      color: #5e64eb;
+      color: #2f7a86;
       font-family: var(--font-cn-elegant);
       font-size: clamp(1.26rem, 2.2vw, 2.2rem);
       font-weight: 800;
@@ -132,6 +148,7 @@
       box-shadow: var(--shadow);
       cursor: pointer;
       transition: transform 0.2s ease, filter 0.2s ease;
+      letter-spacing: 0.01em;
     }
 
     .btn-next:hover {
@@ -142,7 +159,7 @@
     .footer {
       margin: 26px 0 0;
       text-align: center;
-      color: #a5a8ad;
+      color: #93a0a7;
       font-size: clamp(0.86rem, 0.62vw + 0.74rem, 1.12rem);
       font-weight: 700;
       line-height: 1.4;
@@ -199,6 +216,10 @@
         font-size: 1.34rem;
       }
 
+      .hero-note {
+        font-size: 0.86rem;
+      }
+
       .btn-next {
         height: 52px;
         font-size: 1rem;
@@ -215,20 +236,21 @@
   <div class="app">
     <section class="card">
       <header class="top">
-        <div class="title">雅思口语练习</div>
+        <div class="title">考研复试口语练习</div>
         <div class="remaining" id="remaining">剩余未抽：--个话题</div>
       </header>
 
       <div class="stage">
         <div class="question-pill">Waiting...</div>
         <div class="waiting-sub">✨ 准备好了请开始</div>
+        <p class="hero-note">精选考研复试高频口语话题，逐题练习更高效</p>
       </div>
     </section>
 
-    <button class="btn-next" id="btnStart" type="button">🎯 抽取话题并开始</button>
+    <button class="btn-next" id="btnStart" type="button">🎯 抽取问题并开始</button>
 
     <footer class="footer">
-      © <a href="#" aria-label="cici雅思资料库">cici雅思资料库</a> | 雅思口语高分上岸
+      © <a href="#" aria-label="cici雅思资料库">cici雅思资料库</a> | 考研复试口语上岸
     </footer>
   </div>
 
@@ -247,7 +269,6 @@
         const list = Array.isArray(data) ? data : [];
         const topicSet = new Set(
           list
-            .filter((item) => String(item.part || "").toLowerCase() === "part1")
             .map((item) => String(item.topic_id || "").trim())
             .filter(Boolean)
         );
