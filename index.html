@@ -320,8 +320,25 @@
 
   <script>
     const QUESTION_BANK_PATH = "./question-bank.json";
+    const AUDIO_MANIFEST_PATH = "./audio-manifest.json";
+    const AUDIO_MANIFEST_CACHE_KEY = "exam-audio-manifest-cache-v1";
     const remainingEl = document.getElementById("remaining");
     const btnStart = document.getElementById("btnStart");
+
+    async function preloadAudioManifest() {
+      try {
+        const response = await fetch(AUDIO_MANIFEST_PATH, { cache: "no-store" });
+        if (!response.ok) {
+          return;
+        }
+        const data = await response.json();
+        if (data && typeof data === "object") {
+          sessionStorage.setItem(AUDIO_MANIFEST_CACHE_KEY, JSON.stringify(data));
+        }
+      } catch (error) {
+        // ignore
+      }
+    }
 
     async function updateTotalQuestions() {
       try {
@@ -348,6 +365,7 @@
     });
 
     updateTotalQuestions();
+    preloadAudioManifest();
   </script>
 </body>
 </html>

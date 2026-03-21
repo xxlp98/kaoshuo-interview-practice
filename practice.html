@@ -151,6 +151,11 @@
       letter-spacing: 0.01em;
     }
 
+    .start-btn {
+      grid-column: 1 / -1;
+      width: 100%;
+    }
+
     .question-box {
       margin-top: 2px;
       width: min(840px, 100%);
@@ -1281,6 +1286,7 @@
     </section>
 
     <div class="topic-actions">
+      <button class="topic-btn topic-btn-topic start-btn" id="btnStart" type="button" disabled>⏳ 正在加载题库与音频</button>
       <button class="topic-btn topic-btn-topic" id="btnDrawTopic" type="button">🎯 抽取新话题</button>
       <button class="topic-btn topic-btn-question" id="btnDrawQuestion" type="button">🧩 抽取该话题内的新问题</button>
     </div>
@@ -1307,6 +1313,7 @@
     const QUESTION_BANK_PATH = "./question-bank.json";
     const ANSWER_BANK_PATH = "./answer-bank.json";
     const AUDIO_MANIFEST_PATH = "./audio-manifest.json";
+    const AUDIO_MANIFEST_CACHE_KEY = "exam-audio-manifest-cache-v1";
     const urlParams = new URLSearchParams(window.location.search);
     const shouldAutoStart = urlParams.get("autostart") === "1";
     const INTEGRATED_BANK_KEY = "all";
@@ -1330,6 +1337,7 @@
     const btnReplay = document.getElementById("btnReplay");
     const btnPause = document.getElementById("btnPause");
     const btnAction = document.getElementById("btnAction");
+    const btnStart = document.getElementById("btnStart");
     const btnDrawTopic = document.getElementById("btnDrawTopic");
     const btnDrawQuestion = document.getElementById("btnDrawQuestion");
     const speakSimple = document.getElementById("speakSimple");
@@ -1347,6 +1355,11 @@
     const speedButtons = Array.from(document.querySelectorAll(".speed-btn"));
 
     let questionBank = [];
+    let questionBankLoadPromise = null;
+    let questionBankLoadError = null;
+    let isQuestionBankLoaded = false;
+    let hasUserInteracted = false;
+    let queuedAutoSpeak = null;
     let answerBank = {};
     let currentQuestion = null;
     let currentTopicId = null;
@@ -1358,6 +1371,9 @@
     let currentRate = 1;
     let audioManifest = {};
     let currentAudio = null;
+    let audioManifestLoadPromise = null;
+    let audioManifestLoadError = null;
+    let isAudioManifestLoaded = false;
     let speechMonitorTimer = null;
     let activePart = INTEGRATED_BANK_KEY;
 
@@ -1428,6 +1444,22 @@
 
     function getPartQuestions(partKey = activePart) {
       return questionBank;
+    }
+
+    async function ensureQuestionBankLoaded() {
+      if (isQuestionBankLoaded) {
+        return questionBank.length > 0;
+      }
+
+      if (!questionBankLoadPromise) {
+        questionBankLoadPromise = loadQuestionBank();
+      }
+
+      await questionBankLoadPromise;
+      if (questionBankLoadError) {
+        return false;
+      }
+      return questionBank.length > 0;
     }
 
     function getPartTopics(partKey = activePart) {
@@ -2158,6 +2190,17 @@
       return item[role] || "";
     }
 
+    async function ensureAudioManifestLoaded() {
+      if (isAudioManifestLoaded) {
+        return !audioManifestLoadError;
+      }
+      if (!audioManifestLoadPromise) {
+        audioManifestLoadPromise = loadAudioManifest();
+      }
+      await audioManifestLoadPromise;
+      return !audioManifestLoadError;
+    }
+
     async function playGeneratedAudio(questionId, role) {
       const audioPath = getAudioPath(questionId, role);
       if (!audioPath) {
@@ -2190,11 +2233,66 @@
       }
     }
 
+    function playGeneratedAudioFromGesture(questionId, role) {
+      const audioPath = getAudioPath(questionId, role);
+      if (!audioPath) {
+        return false;
+      }
+      stopAnyPlayback();
+      const audio = new Audio(audioPath);
+      audio.preload = "auto";
+      audio.playbackRate = currentRate;
+      currentAudio = audio;
+      audio.onplay = () => syncPauseButtonState();
+      audio.onpause = () => syncPauseButtonState();
+      const playPromise = audio.play();
+      if (playPromise && typeof playPromise.then === "function") {
+        playPromise.then(() => {
+          audio.onended = () => {
+            if (currentAudio === audio) {
+              currentAudio = null;
+            }
+            syncPauseButtonState();
+          };
+          syncPauseButtonState();
+        }).catch((error) => {
+          console.warn("Failed to play generated audio:", error);
+          if (currentAudio === audio) {
+            currentAudio = null;
+          }
+          syncPauseButtonState();
+        });
+      }
+      return true;
+    }
+
+    function speakByRoleFromGesture(role, fallbackText, options = {}) {
+      const { allowTtsFallback = true } = options;
+      if (currentQuestion) {
+        const localPath = getAudioPath(currentQuestion.id, role);
+        if (localPath) {
+          const started = playGeneratedAudioFromGesture(currentQuestion.id, role);
+          if (started) {
+            return;
+          }
+          return;
+        }
+      }
+      if (allowTtsFallback) {
+        speakText(fallbackText);
+      }
+    }
+
     async function speakByRole(role, fallbackText, options = {}) {
       const { allowTtsFallback = true } = options;
       if (currentQuestion) {
-        const played = await playGeneratedAudio(currentQuestion.id, role);
-        if (played) {
+        await ensureAudioManifestLoaded();
+        const localPath = getAudioPath(currentQuestion.id, role);
+        if (localPath) {
+          const played = await playGeneratedAudio(currentQuestion.id, role);
+          if (played) {
+            return;
+          }
           return;
         }
       }
@@ -2370,6 +2468,22 @@
       const hasTopics = topics.length > 0;
       const hasCurrentTopic = Boolean(currentTopicId && getTopicById(currentTopicId));
 
+      if (!isQuestionBankLoaded) {
+        btnDrawTopic.disabled = true;
+        btnDrawQuestion.disabled = true;
+        btnDrawTopic.textContent = "⏳ 正在加载题库";
+        btnDrawQuestion.textContent = "🧩 请稍候";
+        return;
+      }
+
+      if (questionBankLoadError) {
+        btnDrawTopic.disabled = true;
+        btnDrawQuestion.disabled = true;
+        btnDrawTopic.textContent = "⚠️ 题库加载失败";
+        btnDrawQuestion.textContent = "🧩 请刷新重试";
+        return;
+      }
+
       btnDrawTopic.disabled = !hasTopics;
       btnDrawQuestion.disabled = !hasCurrentTopic;
 
@@ -2459,6 +2573,30 @@
       renderTopicNavigator();
 
       if (!currentQuestion) {
+        if (btnStart) {
+          const isReady =
+            isQuestionBankLoaded
+            && !questionBankLoadError
+            && isAudioManifestLoaded
+            && !audioManifestLoadError
+            && getPartTopics().length > 0;
+
+          btnStart.disabled = !isReady;
+          if (!isQuestionBankLoaded || !isAudioManifestLoaded) {
+            btnStart.textContent = "⏳ 正在加载题库与音频";
+          } else if (questionBankLoadError || audioManifestLoadError) {
+            btnStart.textContent = "⚠️ 加载失败，请刷新";
+          } else if (!getPartTopics().length) {
+            btnStart.textContent = "📭 题库为空";
+          } else {
+            btnStart.textContent = "🎯 开始练习（抽取话题）";
+          }
+
+          btnStart.classList.remove("hidden");
+        }
+
+        btnDrawTopic.classList.add("hidden");
+        btnDrawQuestion.classList.add("hidden");
         waitingBox.classList.remove("hidden");
         questionPill.classList.add("hidden");
         questionBox.classList.add("hidden");
@@ -2474,6 +2612,12 @@
       btnReplay.disabled = false;
       waitingBox.classList.add("hidden");
       questionPill.classList.remove("hidden");
+
+      if (btnStart) {
+        btnStart.classList.add("hidden");
+      }
+      btnDrawTopic.classList.remove("hidden");
+      btnDrawQuestion.classList.remove("hidden");
 
       if (isQuestionVisible) {
         questionBox.classList.remove("hidden");
@@ -2543,9 +2687,15 @@
       renderStage();
 
       if (autoSpeak) {
-        window.setTimeout(() => {
-          speakByRole("topic", question.question_en, { allowTtsFallback });
-        }, 120);
+        if (hasUserInteracted) {
+          speakByRoleFromGesture("topic", question.question_en, { allowTtsFallback });
+        } else {
+          queuedAutoSpeak = {
+            role: "topic",
+            text: question.question_en,
+            allowTtsFallback
+          };
+        }
       }
 
       saveActivePartState();
@@ -2640,6 +2790,8 @@
     }
 
     async function loadQuestionBank() {
+      isQuestionBankLoaded = false;
+      questionBankLoadError = null;
       try {
         const response = await fetch(QUESTION_BANK_PATH, { cache: "no-store" });
         if (!response.ok) {
@@ -2665,6 +2817,7 @@
         PARTS.forEach((partKey) => sanitizePartState(partKey));
         loadActivePartState();
       } catch (error) {
+        questionBankLoadError = error;
         console.error("Failed to load question bank:", error);
         const isFileProtocol = window.location.protocol === "file:";
         const localHint =
@@ -2682,6 +2835,8 @@
           + "3) 部署后 question-bank.json 路径是否正确（同目录 ./question-bank.json）";
 
         window.alert(isFileProtocol ? localHint : generalHint);
+      } finally {
+        isQuestionBankLoaded = true;
       }
 
       renderStage();
@@ -2735,6 +2890,8 @@
     }
 
     async function loadAudioManifest() {
+      isAudioManifestLoaded = false;
+      audioManifestLoadError = null;
       try {
         const response = await fetch(AUDIO_MANIFEST_PATH, { cache: "no-store" });
         if (!response.ok) {
@@ -2751,8 +2908,11 @@
         }
         audioManifest = {};
       } catch (error) {
+        audioManifestLoadError = error;
         console.info("No generated audio manifest detected; fallback to browser TTS.", error);
         audioManifest = {};
+      } finally {
+        isAudioManifestLoaded = true;
       }
     }
 
@@ -2760,7 +2920,7 @@
       if (!currentQuestion) {
         return;
       }
-      speakByRole("topic", currentQuestion.question_en);
+      speakByRoleFromGesture("topic", currentQuestion.question_en);
     });
 
     btnPause.addEventListener("click", async () => {
@@ -2814,6 +2974,14 @@
       drawTopicAndFirstQuestion({ autoSpeak: true });
     });
 
+    if (btnStart) {
+      btnStart.addEventListener("click", () => {
+        hasUserInteracted = true;
+        queuedAutoSpeak = null;
+        drawTopicAndFirstQuestion({ autoSpeak: true });
+      });
+    }
+
     btnDrawQuestion.addEventListener("click", () => {
       drawQuestionInCurrentTopic({ autoSpeak: true });
     });
@@ -2821,14 +2989,14 @@
     speakSimple.addEventListener("click", () => {
       if (currentQuestion) {
         const answer = getAnswerBundle(currentQuestion);
-        speakByRole("simple", answer.simple_en);
+        speakByRoleFromGesture("simple", answer.simple_en);
       }
     });
 
     speakAdvanced.addEventListener("click", () => {
       if (currentQuestion) {
         const answer = getAnswerBundle(currentQuestion);
-        speakByRole("advanced", answer.advanced_en);
+        speakByRoleFromGesture("advanced", answer.advanced_en);
       }
     });
 
@@ -2908,19 +3076,46 @@
       window.speechSynthesis.getVoices();
     }
 
-    if (urlParams.get("autostart") === "1") {
-      const shouldSpeak = urlParams.get("autospeak") === "1";
-      drawTopicAndFirstQuestion({ autoSpeak: shouldSpeak, hideQuestion: true });
-    }
-
     renderStage();
     initTopicNavVisibility();
     initTopicNavToggleDrag();
     initHistoryToggleDrag();
     initTopicNavDrag();
-    Promise.all([loadAudioManifest(), loadAnswerBank()]).then(() => {
-      loadQuestionBank();
-    });
+
+    try {
+      const cachedManifest = sessionStorage.getItem(AUDIO_MANIFEST_CACHE_KEY);
+      if (cachedManifest) {
+        const data = JSON.parse(cachedManifest);
+        if (data && typeof data === "object" && data.items && typeof data.items === "object") {
+          audioManifest = data.items;
+          isAudioManifestLoaded = true;
+          audioManifestLoadPromise = Promise.resolve();
+        } else if (data && typeof data === "object") {
+          audioManifest = data;
+          isAudioManifestLoaded = true;
+          audioManifestLoadPromise = Promise.resolve();
+        }
+      }
+    } catch (error) {
+      // ignore
+    }
+
+    const handleFirstInteraction = () => {
+      hasUserInteracted = true;
+      if (queuedAutoSpeak && queuedAutoSpeak.text) {
+        const payload = queuedAutoSpeak;
+        queuedAutoSpeak = null;
+        speakByRoleFromGesture(payload.role, payload.text, { allowTtsFallback: payload.allowTtsFallback });
+      }
+    };
+    document.addEventListener("pointerdown", handleFirstInteraction, { once: true, passive: true });
+    document.addEventListener("keydown", handleFirstInteraction, { once: true });
+
+    questionBankLoadPromise = loadQuestionBank();
+    if (!audioManifestLoadPromise) {
+      audioManifestLoadPromise = isAudioManifestLoaded ? Promise.resolve() : loadAudioManifest();
+    }
+    Promise.all([audioManifestLoadPromise, loadAnswerBank(), questionBankLoadPromise]);
   </script>
 </body>
 </html>
