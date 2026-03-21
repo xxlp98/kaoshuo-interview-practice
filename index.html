@@ -230,6 +230,70 @@
         font-size: 0.82rem;
       }
     }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 12px 8px 16px;
+        font-size: 85%;
+      }
+
+      .app {
+        width: 100%;
+      }
+
+      .card {
+        padding: 14px 10px 12px;
+        border-radius: 18px;
+      }
+
+      .top {
+        font-size: 0.85rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .top .remaining {
+        font-size: 0.8rem;
+        padding: 6px 10px;
+      }
+
+      .stage {
+        min-height: 160px;
+        padding: 12px 2px 10px;
+        gap: 10px;
+      }
+
+      .question-pill {
+        min-height: 32px;
+        min-width: 110px;
+        font-size: 0.88rem;
+        padding: 3px 12px;
+      }
+
+      .waiting-sub {
+        font-size: 1.2rem;
+      }
+
+      .hero-note {
+        font-size: 0.8rem;
+        line-height: 1.4;
+        padding: 0 4px;
+      }
+
+      .btn-next {
+        height: 46px;
+        font-size: 0.9rem;
+        margin-top: 14px;
+        padding: 0 12px;
+      }
+
+      .footer {
+        margin-top: 16px;
+        font-size: 0.75rem;
+        padding: 0 4px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -280,7 +344,7 @@
     }
 
     btnStart.addEventListener("click", () => {
-      window.location.href = "./practice.html?autostart=1";
+      window.location.href = "./practice.html?autostart=1&autospeak=1";
     });
 
     updateTotalQuestions();

@@ -964,6 +964,239 @@
         font-size: 0.76rem;
       }
     }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 12px 8px 16px;
+        font-size: 85%;
+      }
+
+      .app {
+        width: 100%;
+      }
+
+      .card {
+        padding: 14px 10px 12px;
+        border-radius: 18px;
+      }
+
+      .top {
+        font-size: 0.9rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .top .remaining {
+        font-size: 0.85rem;
+        padding: 6px 10px;
+      }
+
+      .stage {
+        min-height: 180px;
+        padding: 12px 2px 10px;
+        gap: 10px;
+      }
+
+      .question-pill {
+        min-height: 32px;
+        min-width: 110px;
+        font-size: 0.88rem;
+        padding: 3px 12px;
+      }
+
+      .waiting {
+        font-size: 1.1rem;
+      }
+
+      .waiting-pill {
+        min-width: 120px;
+        min-height: 32px;
+        padding: 3px 12px;
+      }
+
+      .waiting-sub {
+        font-size: 1.3rem;
+      }
+
+      .question-en {
+        font-size: 1.1rem;
+        margin-bottom: 4px;
+        line-height: 1.3;
+      }
+
+      .question-cn {
+        font-size: 1.15rem;
+        line-height: 1.3;
+      }
+
+      .answers {
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .speed {
+        padding: 8px 6px;
+        gap: 8px;
+      }
+
+      .speed span {
+        font-size: 0.8rem;
+      }
+
+      .speed-btn {
+        min-width: 100px;
+        font-size: 0.76rem;
+        padding: 6px 10px;
+      }
+
+      .answer-card {
+        padding: 12px 10px 10px;
+        border-left-width: 4px;
+        border-radius: 14px;
+      }
+
+      .answer-head {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .answer-title {
+        font-size: 0.88rem;
+        margin-bottom: 6px;
+      }
+
+      .speak-btn {
+        font-size: 0.75rem;
+        padding: 6px 12px;
+        align-self: flex-start;
+      }
+
+      .answer-text {
+        font-size: 0.92rem;
+        margin: 4px 0;
+        line-height: 1.4;
+      }
+
+      .answer-cn {
+        font-size: 0.85rem;
+        line-height: 1.4;
+      }
+
+      .controls {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        margin-top: 16px;
+      }
+
+      .btn {
+        height: 42px;
+        font-size: 0.88rem;
+        padding: 0 12px;
+      }
+
+      .btn-replay,
+      .btn-pause {
+        border-width: 2px;
+      }
+
+      .topic-btn {
+        height: 44px;
+        font-size: 0.88rem;
+      }
+
+      .topic-actions {
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .footer {
+        margin-top: 16px;
+        font-size: 0.75rem;
+        padding: 0 4px;
+      }
+
+      .history-toggle {
+        bottom: 14px;
+        right: 10px;
+        font-size: 12px;
+        padding: 8px 10px;
+        width: auto;
+        height: auto;
+      }
+
+      .history-drawer {
+        width: 100%;
+        border-radius: 20px 20px 0 0;
+        bottom: 0;
+        right: 0;
+        height: auto;
+        max-height: 80vh;
+        transform: translateY(106%);
+      }
+
+      .history-drawer.open {
+        transform: translateY(0);
+      }
+
+      .history-header h2 {
+        font-size: 18px;
+      }
+
+      .history-close {
+        width: 30px;
+        height: 30px;
+        font-size: 16px;
+      }
+
+      .history-tip {
+        font-size: 12px;
+      }
+
+      .history-item {
+        padding: 8px 10px;
+        margin-bottom: 8px;
+        border-radius: 10px;
+      }
+
+      .topic-status-bar {
+        margin-bottom: 8px;
+        padding: 8px 10px;
+        border-radius: 12px;
+      }
+
+      .topic-nav-title {
+        font-size: 0.8rem;
+        margin-bottom: 6px;
+      }
+
+      .topic-nav-list {
+        max-height: 200px;
+        gap: 4px;
+      }
+
+      .topic-nav-item {
+        padding: 6px 8px;
+        border-radius: 8px;
+      }
+
+      .topic-nav-name {
+        font-size: 0.72rem;
+        line-height: 1.2;
+      }
+
+      .topic-nav-meta {
+        font-size: 0.66rem;
+        margin-top: 2px;
+      }
+
+      .topic-nav-toggle {
+        bottom: 70px;
+        width: 38px;
+        height: 38px;
+        font-size: 18px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -2656,6 +2889,11 @@
 
     if ("speechSynthesis" in window) {
       window.speechSynthesis.getVoices();
+    }
+
+    if (urlParams.get("autostart") === "1") {
+      const shouldSpeak = urlParams.get("autospeak") === "1";
+      drawTopicAndFirstQuestion({ autoSpeak: shouldSpeak, hideQuestion: true });
     }
 
     renderStage();

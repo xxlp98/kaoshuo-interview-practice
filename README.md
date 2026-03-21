@@ -96,7 +96,7 @@ git init
 git add .
 git commit -m "feat: 初始化考研复试口语项目"
 git branch -M main
-git remote add origin hhttps://github.com/xxlp98/kaoshuo-interview-practice.git
+git remote add origin https://github.com/xxlp98/kaoshuo-interview-practice.git
 git push -u origin main
 ```
 
