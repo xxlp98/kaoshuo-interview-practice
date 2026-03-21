@@ -775,6 +775,14 @@
     @media (max-width: 860px) {
       body {
         padding: 14px 10px 18px;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+      }
+
+      .app {
+        width: 100%;
+        padding-bottom: 96px;
       }
 
       .card {
@@ -911,6 +919,7 @@
 
       .topic-status-bar.is-hidden {
         transform: none;
+        display: none;
       }
 
       .topic-nav-toggle {
@@ -969,10 +978,14 @@
       body {
         padding: 12px 8px 16px;
         font-size: 85%;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
       }
 
       .app {
         width: 100%;
+        padding-bottom: 96px;
       }
 
       .card {
@@ -1163,6 +1176,10 @@
         margin-bottom: 8px;
         padding: 8px 10px;
         border-radius: 12px;
+      }
+
+      .topic-status-bar.is-hidden {
+        display: none;
       }
 
       .topic-nav-title {
