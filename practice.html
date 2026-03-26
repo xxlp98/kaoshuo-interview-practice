@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>考研复试口语练习</title>
   <style>
-    @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;800&family=Noto+Serif+SC:wght@600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&family=Sora:wght@600;700;800&display=swap");
-
     :root {
       --bg: #edf3f4;
       --card: #fbfdfd;
@@ -22,9 +20,9 @@
       --radius-card: 34px;
       --radius-pill: 999px;
       --btn-height: 76px;
-      --font-ui: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", sans-serif;
-      --font-display: "Plus Jakarta Sans", "Sora", "Noto Sans SC", sans-serif;
-      --font-cn-elegant: "Noto Serif SC", "Songti SC", "STSong", serif;
+      --font-ui: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+      --font-display: "Avenir Next", "SF Pro Display", "PingFang SC", "Noto Sans CJK SC", sans-serif;
+      --font-cn-elegant: "Songti SC", "STSong", "Noto Serif CJK SC", serif;
     }
 
     * {
@@ -744,6 +742,46 @@
       display: none;
     }
 
+    .fatal-error-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: linear-gradient(180deg, #f2f7f7 0%, #edf3f4 100%);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .fatal-error-overlay.visible {
+      display: flex;
+    }
+
+    .fatal-error-card {
+      width: min(760px, 100%);
+      background: #fbfdfd;
+      border-radius: 20px;
+      box-shadow: 0 18px 40px rgba(66, 79, 130, 0.16);
+      border: 1px solid #d5e4e8;
+      padding: 20px 18px;
+      color: #2b3a41;
+    }
+
+    .fatal-error-card h2 {
+      margin: 0 0 10px;
+      font-size: 1.15rem;
+      color: #2f6f89;
+    }
+
+    .fatal-error-card p {
+      margin: 0;
+      font-size: 0.95rem;
+      line-height: 1.55;
+      color: #4f636b;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
     @keyframes enter-page {
       from {
         opacity: 0;
@@ -1309,7 +1347,114 @@
 
   <div class="history-backdrop hidden" id="historyBackdrop"></div>
 
+  <section class="fatal-error-overlay" id="fatalErrorOverlay" aria-live="assertive" aria-atomic="true">
+    <div class="fatal-error-card">
+      <h2>页面加载遇到问题</h2>
+      <p id="fatalErrorText">页面出现异常，请刷新后重试。</p>
+    </div>
+  </section>
+
   <script>
+    const fatalErrorOverlay = document.getElementById("fatalErrorOverlay");
+    const fatalErrorText = document.getElementById("fatalErrorText");
+    const ERROR_REPORT_ENDPOINT = "/.netlify/functions/report-client-error";
+    let lastErrorReportSignature = "";
+    let lastErrorReportAt = 0;
+
+    function getReadableErrorMessage(error) {
+      if (!error) {
+        return "未知错误";
+      }
+      if (typeof error === "string") {
+        return error;
+      }
+      if (error instanceof Error) {
+        return error.message || String(error);
+      }
+      if (error && typeof error === "object" && "message" in error) {
+        return String(error.message || "未知错误");
+      }
+      return String(error);
+    }
+
+    function showFatalError(reason) {
+      if (!fatalErrorOverlay || !fatalErrorText) {
+        return;
+      }
+      const message = getReadableErrorMessage(reason);
+      fatalErrorText.textContent = `页面初始化失败，已启用兜底提示。\n错误信息：${message}\n\n建议：请刷新页面重试；如仍失败，请稍后再试。`;
+      fatalErrorOverlay.classList.add("visible");
+    }
+
+    function buildErrorSignature(payload) {
+      return [payload.type, payload.message, payload.source, payload.line, payload.column].join("|");
+    }
+
+    function reportClientError(payload) {
+      const now = Date.now();
+      const signature = buildErrorSignature(payload);
+      if (signature === lastErrorReportSignature && now - lastErrorReportAt < 5000) {
+        return;
+      }
+      lastErrorReportSignature = signature;
+      lastErrorReportAt = now;
+
+      const body = {
+        ...payload,
+        page: window.location.href,
+        userAgent: navigator.userAgent,
+        language: navigator.language || "",
+        viewport: `${window.innerWidth}x${window.innerHeight}`,
+        referrer: document.referrer || "",
+        timestamp: new Date().toISOString()
+      };
+
+      const serialized = JSON.stringify(body);
+      if (navigator.sendBeacon) {
+        const blob = new Blob([serialized], { type: "application/json" });
+        const sent = navigator.sendBeacon(ERROR_REPORT_ENDPOINT, blob);
+        if (sent) {
+          return;
+        }
+      }
+
+      fetch(ERROR_REPORT_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: serialized,
+        keepalive: true
+      }).catch(() => {
+        // ignore report failures
+      });
+    }
+
+    window.addEventListener("error", (event) => {
+      reportClientError({
+        type: "window_error",
+        message: getReadableErrorMessage(event.error || event.message),
+        stack: event.error && event.error.stack ? String(event.error.stack) : "",
+        source: event.filename || "",
+        line: Number.isFinite(event.lineno) ? event.lineno : null,
+        column: Number.isFinite(event.colno) ? event.colno : null
+      });
+      showFatalError(event.error || event.message);
+    });
+
+    window.addEventListener("unhandledrejection", (event) => {
+      const reason = event.reason;
+      reportClientError({
+        type: "unhandled_rejection",
+        message: getReadableErrorMessage(reason),
+        stack: reason && reason.stack ? String(reason.stack) : "",
+        source: "promise",
+        line: null,
+        column: null
+      });
+      showFatalError(event.reason);
+    });
+
     const QUESTION_BANK_PATH = "./question-bank.json";
     const ANSWER_BANK_PATH = "./answer-bank.json";
     const AUDIO_MANIFEST_PATH = "./audio-manifest.json";
