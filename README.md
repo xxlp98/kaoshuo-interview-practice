@@ -119,6 +119,33 @@ git push
 
 完成后，每次向 GitHub 的主分支 push，Netlify 会自动重新部署。
 
+## 前端错误上报（Netlify Functions）
+
+项目已内置轻量错误上报端点：
+
+- 端点：`/.netlify/functions/report-client-error`
+- 函数文件：`netlify/functions/report-client-error.js`
+- 触发时机：页面运行时异常（`window.error` / `unhandledrejection`）
+
+上报字段包含：
+
+- 错误类型与错误信息
+- stack（截断后）
+- 页面 URL、source、行列号
+- 浏览器 UA、语言、视口尺寸、referrer
+- Netlify request id 与来源 IP（由平台头部提供）
+
+如何查看日志：
+
+1. 打开 Netlify 对应站点后台。
+2. 进入 Functions -> `report-client-error`。
+3. 在函数日志中搜索关键字：`[client-error-report]`。
+
+说明：
+
+- 该方案不依赖自建后端，适合先定位线上白屏与偶发错误。
+- 前端已做 5 秒去重上报，避免同一错误短时间内重复刷日志。
+
 ## 缓存与更新说明
 
 - HTML 与 JSON 走 no-cache，保证题库与索引及时更新。
