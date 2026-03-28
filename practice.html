@@ -1455,11 +1455,42 @@
       showFatalError(event.reason);
     });
 
-    const QUESTION_BANK_PATH = "./question-bank.json";
-    const ANSWER_BANK_PATH = "./answer-bank.json";
-    const AUDIO_MANIFEST_PATH = "./audio-manifest.json";
-    const AUDIO_MANIFEST_CACHE_KEY = "exam-audio-manifest-cache-v1";
     const urlParams = new URLSearchParams(window.location.search);
+    const hostname = (window.location.hostname || "").toLowerCase();
+    const isBranchDeployHost = hostname.includes("--");
+    const isLikelyTestHost = /(^|\.)(test|staging|dev|preview)\b/i.test(hostname) || isBranchDeployHost;
+    const cdnSwitch = urlParams.get("cdn");
+    const shouldUseCdn = cdnSwitch === "1" || (cdnSwitch !== "0" && isLikelyTestHost);
+    const CDN_BRANCH = urlParams.get("cdnBranch") || "staging";
+    const CDN_BASE = `https://cdn.jsdelivr.net/gh/xxlp98/kaoshuo-interview-practice@${encodeURIComponent(CDN_BRANCH)}`;
+
+    function buildDataUrl(relativePath) {
+      const normalized = String(relativePath || "").replace(/^\.?\//, "");
+      if (!shouldUseCdn) {
+        return `./${normalized}`;
+      }
+      return `${CDN_BASE}/${normalized}`;
+    }
+
+    function resolveAssetUrl(path) {
+      const raw = String(path || "").trim();
+      if (!raw) {
+        return "";
+      }
+      if (/^https?:\/\//i.test(raw)) {
+        return raw;
+      }
+      const normalized = raw.replace(/^\.?\//, "");
+      if (shouldUseCdn) {
+        return `${CDN_BASE}/${normalized}`;
+      }
+      return `./${normalized}`;
+    }
+
+    const QUESTION_BANK_PATH = buildDataUrl("question-bank.json");
+    const ANSWER_BANK_PATH = buildDataUrl("answer-bank.json");
+    const AUDIO_MANIFEST_PATH = buildDataUrl("audio-manifest.json");
+    const AUDIO_MANIFEST_CACHE_KEY = "exam-audio-manifest-cache-v1";
     const shouldAutoStart = urlParams.get("autostart") === "1";
     const INTEGRATED_BANK_KEY = "all";
     const PARTS = [INTEGRATED_BANK_KEY];
@@ -2332,7 +2363,7 @@
       if (!item) {
         return "";
       }
-      return item[role] || "";
+      return resolveAssetUrl(item[role] || "");
     }
 
     async function ensureAudioManifestLoaded() {

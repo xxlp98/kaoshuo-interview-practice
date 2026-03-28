@@ -119,6 +119,48 @@ git push
 
 完成后，每次向 GitHub 的主分支 push，Netlify 会自动重新部署。
 
+## 正式环境与测试环境（推荐）
+
+建议使用两套分支 + 两套 Netlify 站点：
+
+- 正式环境：`main` 分支，绑定正式域名。
+- 测试环境：`staging` 分支，使用 Netlify 测试域名（例如 `staging--<site>.netlify.app`）。
+
+推荐做法：
+
+1. 在 GitHub 创建 `staging` 分支。
+2. 在 Netlify 复制一份站点作为测试站，连接同一仓库。
+3. 测试站的 Production branch 设为 `staging`。
+4. 正式站继续使用 `main`。
+
+这样你可以先把改动 push 到 `staging` 做验证，通过后再合并到 `main`。
+
+## 在测试环境启用 CDN 加速
+
+项目已内置“测试域名自动走 CDN，正式域名走源站”的逻辑：
+
+- 测试环境（如 `staging--...netlify.app`）默认使用 jsDelivr 加载：
+	- `question-bank.json`
+	- `answer-bank.json`
+	- `audio-manifest.json`
+	- `assets/audio/*`
+- 正式环境默认不启用 CDN，行为保持稳定。
+
+可用 URL 参数手动覆盖：
+
+- 强制开启 CDN：`?cdn=1`
+- 强制关闭 CDN：`?cdn=0`
+- 指定 CDN 分支：`?cdnBranch=staging`
+
+示例：
+
+- `https://你的测试域名/practice.html?cdn=1&cdnBranch=staging`
+
+说明：
+
+- 当前 CDN 源为 `https://cdn.jsdelivr.net/gh/xxlp98/kaoshuo-interview-practice@<branch>`。
+- 若你在测试环境用其他分支试验，可通过 `cdnBranch` 参数切换。
+
 ## 前端错误上报（Netlify Functions）
 
 项目已内置轻量错误上报端点：
