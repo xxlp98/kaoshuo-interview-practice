@@ -1391,43 +1391,56 @@
     }
 
     function reportClientError(payload) {
-      const now = Date.now();
-      const signature = buildErrorSignature(payload);
-      if (signature === lastErrorReportSignature && now - lastErrorReportAt < 5000) {
-        return;
-      }
-      lastErrorReportSignature = signature;
-      lastErrorReportAt = now;
-
-      const body = {
-        ...payload,
-        page: window.location.href,
-        userAgent: navigator.userAgent,
-        language: navigator.language || "",
-        viewport: `${window.innerWidth}x${window.innerHeight}`,
-        referrer: document.referrer || "",
-        timestamp: new Date().toISOString()
-      };
-
-      const serialized = JSON.stringify(body);
-      if (navigator.sendBeacon) {
-        const blob = new Blob([serialized], { type: "application/json" });
-        const sent = navigator.sendBeacon(ERROR_REPORT_ENDPOINT, blob);
-        if (sent) {
+      try {
+        const now = Date.now();
+        const signature = buildErrorSignature(payload);
+        if (signature === lastErrorReportSignature && now - lastErrorReportAt < 5000) {
           return;
         }
-      }
+        lastErrorReportSignature = signature;
+        lastErrorReportAt = now;
 
-      fetch(ERROR_REPORT_ENDPOINT, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: serialized,
-        keepalive: true
-      }).catch(() => {
-        // ignore report failures
-      });
+        const body = Object.assign({}, payload, {
+          page: window.location.href,
+          userAgent: navigator.userAgent,
+          language: navigator.language || "",
+          viewport: String(window.innerWidth) + "x" + String(window.innerHeight),
+          referrer: document.referrer || "",
+          timestamp: new Date().toISOString()
+        });
+
+        const serialized = JSON.stringify(body);
+        if (typeof navigator.sendBeacon === "function") {
+          try {
+            var beaconBlob = new Blob([serialized], { type: "application/json" });
+            if (navigator.sendBeacon(ERROR_REPORT_ENDPOINT, beaconBlob)) {
+              return;
+            }
+          } catch (_blobErr) {
+            try {
+              if (navigator.sendBeacon(ERROR_REPORT_ENDPOINT, serialized)) {
+                return;
+              }
+            } catch (_beaconErr) {
+              // ignore
+            }
+          }
+        }
+
+        try {
+          fetch(ERROR_REPORT_ENDPOINT, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: serialized
+          }).catch(function () {});
+        } catch (_fetchErr) {
+          // 旧 WebView 对 fetch init 兼容性差，避免同步抛错再次触发全局 error
+        }
+      } catch (_outer) {
+        // ignore
+      }
     }
 
     window.addEventListener("error", (event) => {
@@ -1942,7 +1955,13 @@
         topicNavDragState.originLeft = rect.left;
         topicNavDragState.originTop = rect.top;
         topicNavDragState.moved = false;
-        topicStatusBar.setPointerCapture(event.pointerId);
+        try {
+          topicStatusBar.setPointerCapture(event.pointerId);
+        } catch (_capErr) {
+          topicNavDragState.pointerId = null;
+          topicStatusBar.classList.remove("dragging");
+          return;
+        }
         topicStatusBar.classList.add("dragging");
         resetTopicNavAutoHide();
         event.preventDefault();
@@ -2013,7 +2032,13 @@
         topicNavToggleDragState.originLeft = rect.left;
         topicNavToggleDragState.originTop = rect.top;
         topicNavToggleDragState.moved = false;
-        topicNavToggle.setPointerCapture(event.pointerId);
+        try {
+          topicNavToggle.setPointerCapture(event.pointerId);
+        } catch (_capErr) {
+          topicNavToggleDragState.pointerId = null;
+          topicNavToggle.classList.remove("dragging");
+          return;
+        }
         topicNavToggle.classList.add("dragging");
         event.preventDefault();
       });
@@ -2162,7 +2187,13 @@
         dragState.originLeft = rect.left;
         dragState.originTop = rect.top;
         dragState.moved = false;
-        historyToggle.setPointerCapture(event.pointerId);
+        try {
+          historyToggle.setPointerCapture(event.pointerId);
+        } catch (_capErr) {
+          dragState.pointerId = null;
+          historyToggle.classList.remove("dragging");
+          return;
+        }
         historyToggle.classList.add("dragging");
         event.preventDefault();
       });
@@ -2938,7 +2969,12 @@
       isQuestionBankLoaded = false;
       questionBankLoadError = null;
       try {
-        const response = await fetch(QUESTION_BANK_PATH, { cache: "no-store" });
+        let response;
+        try {
+          response = await fetch(QUESTION_BANK_PATH, { cache: "no-store" });
+        } catch (_e) {
+          response = await fetch(QUESTION_BANK_PATH);
+        }
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
         }
@@ -2996,7 +3032,12 @@
 
     async function loadAnswerBank() {
       try {
-        const response = await fetch(ANSWER_BANK_PATH, { cache: "no-store" });
+        let response;
+        try {
+          response = await fetch(ANSWER_BANK_PATH, { cache: "no-store" });
+        } catch (_e) {
+          response = await fetch(ANSWER_BANK_PATH);
+        }
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
         }
@@ -3038,7 +3079,12 @@
       isAudioManifestLoaded = false;
       audioManifestLoadError = null;
       try {
-        const response = await fetch(AUDIO_MANIFEST_PATH, { cache: "no-store" });
+        let response;
+        try {
+          response = await fetch(AUDIO_MANIFEST_PATH, { cache: "no-store" });
+        } catch (_e) {
+          response = await fetch(AUDIO_MANIFEST_PATH);
+        }
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
         }
@@ -3218,7 +3264,11 @@
     syncPartInUrl(false);
 
     if ("speechSynthesis" in window) {
-      window.speechSynthesis.getVoices();
+      try {
+        window.speechSynthesis.getVoices();
+      } catch (_voiceErr) {
+        // 部分内置浏览器 WebView 对语音 API 实现不完整
+      }
     }
 
     renderStage();
@@ -3253,8 +3303,22 @@
         speakByRoleFromGesture(payload.role, payload.text, { allowTtsFallback: payload.allowTtsFallback });
       }
     };
-    document.addEventListener("pointerdown", handleFirstInteraction, { once: true, passive: true });
-    document.addEventListener("keydown", handleFirstInteraction, { once: true });
+    try {
+      document.addEventListener("pointerdown", handleFirstInteraction, { once: true, passive: true });
+    } catch (_optsErr) {
+      document.addEventListener("pointerdown", function onFirstPointer(ev) {
+        handleFirstInteraction(ev);
+        document.removeEventListener("pointerdown", onFirstPointer);
+      });
+    }
+    try {
+      document.addEventListener("keydown", handleFirstInteraction, { once: true });
+    } catch (_keyOptsErr) {
+      document.addEventListener("keydown", function onFirstKey(ev) {
+        handleFirstInteraction(ev);
+        document.removeEventListener("keydown", onFirstKey);
+      });
+    }
 
     questionBankLoadPromise = loadQuestionBank();
     if (!audioManifestLoadPromise) {

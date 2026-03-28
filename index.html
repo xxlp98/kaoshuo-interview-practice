@@ -400,43 +400,56 @@
     }
 
     function reportClientError(payload) {
-      const now = Date.now();
-      const signature = buildErrorSignature(payload);
-      if (signature === lastErrorReportSignature && now - lastErrorReportAt < 5000) {
-        return;
-      }
-      lastErrorReportSignature = signature;
-      lastErrorReportAt = now;
-
-      const body = {
-        ...payload,
-        page: window.location.href,
-        userAgent: navigator.userAgent,
-        language: navigator.language || "",
-        viewport: `${window.innerWidth}x${window.innerHeight}`,
-        referrer: document.referrer || "",
-        timestamp: new Date().toISOString()
-      };
-
-      const serialized = JSON.stringify(body);
-      if (navigator.sendBeacon) {
-        const blob = new Blob([serialized], { type: "application/json" });
-        const sent = navigator.sendBeacon(ERROR_REPORT_ENDPOINT, blob);
-        if (sent) {
+      try {
+        const now = Date.now();
+        const signature = buildErrorSignature(payload);
+        if (signature === lastErrorReportSignature && now - lastErrorReportAt < 5000) {
           return;
         }
-      }
+        lastErrorReportSignature = signature;
+        lastErrorReportAt = now;
 
-      fetch(ERROR_REPORT_ENDPOINT, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: serialized,
-        keepalive: true
-      }).catch(() => {
-        // ignore report failures
-      });
+        const body = Object.assign({}, payload, {
+          page: window.location.href,
+          userAgent: navigator.userAgent,
+          language: navigator.language || "",
+          viewport: String(window.innerWidth) + "x" + String(window.innerHeight),
+          referrer: document.referrer || "",
+          timestamp: new Date().toISOString()
+        });
+
+        const serialized = JSON.stringify(body);
+        if (typeof navigator.sendBeacon === "function") {
+          try {
+            var blob = new Blob([serialized], { type: "application/json" });
+            if (navigator.sendBeacon(ERROR_REPORT_ENDPOINT, blob)) {
+              return;
+            }
+          } catch (_blobErr) {
+            try {
+              if (navigator.sendBeacon(ERROR_REPORT_ENDPOINT, serialized)) {
+                return;
+              }
+            } catch (_beaconErr) {
+              // ignore
+            }
+          }
+        }
+
+        try {
+          fetch(ERROR_REPORT_ENDPOINT, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: serialized
+          }).catch(function () {});
+        } catch (_fetchErr) {
+          // keepalive / invalid init 等在旧 WebView 会同步抛错，避免再次触发 error
+        }
+      } catch (_outer) {
+        // 上报失败不得影响页面
+      }
     }
 
     window.addEventListener("error", (event) => {
@@ -472,7 +485,12 @@
 
     async function preloadAudioManifest() {
       try {
-        const response = await fetch(AUDIO_MANIFEST_PATH, { cache: "no-store" });
+        let response;
+        try {
+          response = await fetch(AUDIO_MANIFEST_PATH, { cache: "no-store" });
+        } catch (_e) {
+          response = await fetch(AUDIO_MANIFEST_PATH);
+        }
         if (!response.ok) {
           return;
         }
@@ -487,7 +505,12 @@
 
     async function updateTotalQuestions() {
       try {
-        const response = await fetch(QUESTION_BANK_PATH, { cache: "no-store" });
+        let response;
+        try {
+          response = await fetch(QUESTION_BANK_PATH, { cache: "no-store" });
+        } catch (_e) {
+          response = await fetch(QUESTION_BANK_PATH);
+        }
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
         }
