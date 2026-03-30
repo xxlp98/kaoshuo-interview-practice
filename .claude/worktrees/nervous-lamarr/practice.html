@@ -1184,7 +1184,6 @@
       .history-drawer {
         width: 100%;
         border-radius: 20px 20px 0 0;
-        top: auto;
         bottom: 0;
         right: 0;
         height: auto;
@@ -1234,7 +1233,6 @@
       .topic-nav-list {
         max-height: 200px;
         gap: 4px;
-        will-change: transform;
       }
 
       .topic-nav-item {
@@ -1470,42 +1468,11 @@
       showFatalError(event.reason);
     });
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const hostname = (window.location.hostname || "").toLowerCase();
-    const isBranchDeployHost = hostname.includes("--");
-    const isLikelyTestHost = /(^|\.)(test|staging|dev|preview)\b/i.test(hostname) || isBranchDeployHost;
-    const cdnSwitch = urlParams.get("cdn");
-    const shouldUseCdn = cdnSwitch === "1" || (cdnSwitch !== "0" && isLikelyTestHost);
-    const CDN_BRANCH = urlParams.get("cdnBranch") || "staging";
-    const CDN_BASE = `https://cdn.jsdelivr.net/gh/xxlp98/kaoshuo-interview-practice@${encodeURIComponent(CDN_BRANCH)}`;
-
-    function buildDataUrl(relativePath) {
-      const normalized = String(relativePath || "").replace(/^\.?\//, "");
-      if (!shouldUseCdn) {
-        return `./${normalized}`;
-      }
-      return `${CDN_BASE}/${normalized}`;
-    }
-
-    function resolveAssetUrl(path) {
-      const raw = String(path || "").trim();
-      if (!raw) {
-        return "";
-      }
-      if (/^https?:\/\//i.test(raw)) {
-        return raw;
-      }
-      const normalized = raw.replace(/^\.?\//, "");
-      if (shouldUseCdn) {
-        return `${CDN_BASE}/${normalized}`;
-      }
-      return `./${normalized}`;
-    }
-
-    const QUESTION_BANK_PATH = buildDataUrl("question-bank.json");
-    const ANSWER_BANK_PATH = buildDataUrl("answer-bank.json");
-    const AUDIO_MANIFEST_PATH = buildDataUrl("audio-manifest.json");
+    const QUESTION_BANK_PATH = "./question-bank.json";
+    const ANSWER_BANK_PATH = "./answer-bank.json";
+    const AUDIO_MANIFEST_PATH = "./audio-manifest.json";
     const AUDIO_MANIFEST_CACHE_KEY = "exam-audio-manifest-cache-v1";
+    const urlParams = new URLSearchParams(window.location.search);
     const shouldAutoStart = urlParams.get("autostart") === "1";
     const INTEGRATED_BANK_KEY = "all";
     const PARTS = [INTEGRATED_BANK_KEY];
@@ -1562,7 +1529,6 @@
     let currentRate = 1;
     let audioManifest = {};
     let currentAudio = null;
-    const audioElementCache = new Map();
     let audioManifestLoadPromise = null;
     let audioManifestLoadError = null;
     let isAudioManifestLoaded = false;
@@ -1589,10 +1555,7 @@
       originTop: 0,
       moved: false,
       justDragged: false,
-      inited: false,
-      pendingX: 0,
-      pendingY: 0,
-      rafId: null
+      inited: false
     };
 
     const topicNavDragState = {
@@ -1603,10 +1566,7 @@
       originTop: 0,
       moved: false,
       justDragged: false,
-      inited: false,
-      pendingX: 0,
-      pendingY: 0,
-      rafId: null
+      inited: false
     };
 
     const topicNavToggleDragState = {
@@ -1617,10 +1577,7 @@
       originTop: 0,
       moved: false,
       justDragged: false,
-      inited: false,
-      pendingX: 0,
-      pendingY: 0,
-      rafId: null
+      inited: false
     };
 
     function createPartState() {
@@ -2019,15 +1976,7 @@
         if (!topicNavDragState.moved && (Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3)) {
           topicNavDragState.moved = true;
         }
-        topicNavDragState.pendingX = topicNavDragState.originLeft + deltaX;
-        topicNavDragState.pendingY = topicNavDragState.originTop + deltaY;
-        if (topicNavDragState.rafId) {
-          return;
-        }
-        topicNavDragState.rafId = requestAnimationFrame(() => {
-          applyTopicNavPosition(topicNavDragState.pendingX, topicNavDragState.pendingY);
-          topicNavDragState.rafId = null;
-        });
+        applyTopicNavPosition(topicNavDragState.originLeft + deltaX, topicNavDragState.originTop + deltaY);
       });
 
       topicStatusBar.addEventListener("pointerup", (event) => {
@@ -2103,15 +2052,7 @@
         if (!topicNavToggleDragState.moved && (Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3)) {
           topicNavToggleDragState.moved = true;
         }
-        topicNavToggleDragState.pendingX = topicNavToggleDragState.originLeft + deltaX;
-        topicNavToggleDragState.pendingY = topicNavToggleDragState.originTop + deltaY;
-        if (topicNavToggleDragState.rafId) {
-          return;
-        }
-        topicNavToggleDragState.rafId = requestAnimationFrame(() => {
-          applyTopicNavTogglePosition(topicNavToggleDragState.pendingX, topicNavToggleDragState.pendingY);
-          topicNavToggleDragState.rafId = null;
-        });
+        applyTopicNavTogglePosition(topicNavToggleDragState.originLeft + deltaX, topicNavToggleDragState.originTop + deltaY);
       });
 
       topicNavToggle.addEventListener("pointerup", (event) => {
@@ -2266,15 +2207,7 @@
         if (!dragState.moved && (Math.abs(deltaX) > 3 || Math.abs(deltaY) > 3)) {
           dragState.moved = true;
         }
-        dragState.pendingX = dragState.originLeft + deltaX;
-        dragState.pendingY = dragState.originTop + deltaY;
-        if (dragState.rafId) {
-          return;
-        }
-        dragState.rafId = requestAnimationFrame(() => {
-          applyHistoryTogglePosition(dragState.pendingX, dragState.pendingY);
-          dragState.rafId = null;
-        });
+        applyHistoryTogglePosition(dragState.originLeft + deltaX, dragState.originTop + deltaY);
       });
 
       historyToggle.addEventListener("pointerup", (event) => {
@@ -2403,7 +2336,7 @@
         if (!hasSpeech) {
           stopSpeechMonitor();
         }
-      }, 300);
+      }, 160);
     }
 
     function syncPauseButtonState() {
@@ -2430,31 +2363,7 @@
       if (!item) {
         return "";
       }
-      return resolveAssetUrl(item[role] || "");
-    }
-
-    function getOrCreateCachedAudio(audioPath) {
-      const existing = audioElementCache.get(audioPath);
-      if (existing) {
-        return existing;
-      }
-      const audio = new Audio(audioPath);
-      audio.preload = "auto";
-      audioElementCache.set(audioPath, audio);
-      return audio;
-    }
-
-    function preloadGeneratedAudio(questionId, role) {
-      const audioPath = getAudioPath(questionId, role);
-      if (!audioPath) {
-        return;
-      }
-      const audio = getOrCreateCachedAudio(audioPath);
-      try {
-        audio.load();
-      } catch (error) {
-        // ignore preload failures; playback will still attempt later
-      }
+      return item[role] || "";
     }
 
     async function ensureAudioManifestLoaded() {
@@ -2474,9 +2383,9 @@
         return false;
       }
       stopAnyPlayback();
-      const audio = getOrCreateCachedAudio(audioPath);
+      const audio = new Audio(audioPath);
+      audio.preload = "auto";
       audio.playbackRate = currentRate;
-      audio.currentTime = 0;
       currentAudio = audio;
       audio.onplay = () => syncPauseButtonState();
       audio.onpause = () => syncPauseButtonState();
@@ -2506,9 +2415,9 @@
         return false;
       }
       stopAnyPlayback();
-      const audio = getOrCreateCachedAudio(audioPath);
+      const audio = new Audio(audioPath);
+      audio.preload = "auto";
       audio.playbackRate = currentRate;
-      audio.currentTime = 0;
       currentAudio = audio;
       audio.onplay = () => syncPauseButtonState();
       audio.onpause = () => syncPauseButtonState();
@@ -2556,7 +2465,6 @@
         await ensureAudioManifestLoaded();
         const localPath = getAudioPath(currentQuestion.id, role);
         if (localPath) {
-          preloadGeneratedAudio(currentQuestion.id, role);
           const played = await playGeneratedAudio(currentQuestion.id, role);
           if (played) {
             return;
@@ -2575,7 +2483,7 @@
         return;
       }
       if (!("speechSynthesis" in window)) {
-        console.warn("Speech synthesis is not supported in this browser");
+        window.alert("当前浏览器不支持语音朗读。请使用 Chrome 或 Edge。\nSpeech synthesis is not supported in this browser.");
         return;
       }
       const preferredVoice = pickPreferredEnglishVoice();
@@ -2974,13 +2882,13 @@
       const topics = getPartTopics();
 
       if (!topics.length) {
-        console.warn("综合题库暂无话题，请先补充题库内容。");
+        window.alert("综合题库暂无话题，请先补充题库内容。");
         return;
       }
 
       let availableTopics = topics.filter((topic) => !drawnTopicIds.includes(topic.topic_id));
       if (!availableTopics.length) {
-        console.info(`${getPartLabel(activePart)} 话题已全部抽取完，已自动重置话题池。`);
+        window.alert(`${getPartLabel(activePart)} 话题已全部抽取完，已自动重置话题池。`);
         drawnTopicIds = [];
         drawnQuestionIdsByTopic = {};
         availableTopics = topics;
@@ -3004,12 +2912,12 @@
       const topics = getPartTopics();
 
       if (!topics.length) {
-        console.warn("综合题库暂无话题，请先补充题库内容。");
+        window.alert("综合题库暂无话题，请先补充题库内容。");
         return;
       }
 
       if (!currentTopicId || !getTopicById(currentTopicId)) {
-        console.warn("请先抽取一个话题，再抽取该话题内的新问题。");
+        window.alert("请先抽取一个话题，再抽取该话题内的新问题。");
         return;
       }
 
@@ -3018,11 +2926,7 @@
       const remainingQuestions = topic.questions.filter((question) => !drawnInTopic.includes(question.id));
 
       if (!remainingQuestions.length) {
-        const topicName = topic.topic_title_cn
-          ? `${topic.topic_title_en} / ${topic.topic_title_cn}`
-          : topic.topic_title_en;
-        window.alert(`【${topicName}】该话题内的题目已全部抽完，接下来将为你切换到一个新话题。`);
-        console.info(`【${topic.topic_title_en}】该话题问题已抽取完，提示后自动抽取下一个话题。`);
+        window.alert(`【${topic.topic_title_en}】该话题问题已抽取完，自动抽取下一个话题。`);
         drawTopicAndFirstQuestion({ autoSpeak });
         return;
       }
@@ -3097,12 +3001,21 @@
         questionBankLoadError = error;
         console.error("Failed to load question bank:", error);
         const isFileProtocol = window.location.protocol === "file:";
-        const msg = isFileProtocol
-          ? "当前你是直接打开 HTML 文件（file://），浏览器会拦截 JSON 读取。请在项目目录运行：python3 -m http.server 5500，然后访问：http://localhost:5500"
-          : "题库 JSON 加载失败，请检查 question-bank.json 文件是否存在且为有效 JSON";
-        if (typeof console !== "undefined" && console.warn) {
-          console.warn(msg);
-        }
+        const localHint =
+          "当前你是直接打开 HTML 文件（file://），浏览器会拦截 JSON 读取。\n\n"
+          + "请在项目目录运行：\n"
+          + "python3 -m http.server 5500\n"
+          + "然后访问：\n"
+          + "http://localhost:5500\n\n"
+          + "如果要分享给别人，建议部署到 Netlify，直接发网址即可。";
+
+        const generalHint =
+          "题库 JSON 加载失败，请检查：\n"
+          + "1) question-bank.json 是否存在并为有效 JSON\n"
+          + "2) 页面是否通过本地/线上服务器访问（不是 file://）\n"
+          + "3) 部署后 question-bank.json 路径是否正确（同目录 ./question-bank.json）";
+
+        window.alert(isFileProtocol ? localHint : generalHint);
       } finally {
         isQuestionBankLoaded = true;
       }
@@ -3367,23 +3280,19 @@
     try {
       const cachedManifest = sessionStorage.getItem(AUDIO_MANIFEST_CACHE_KEY);
       if (cachedManifest) {
-        try {
-          const data = JSON.parse(cachedManifest);
-          if (data && typeof data === "object" && data.items && typeof data.items === "object") {
-            audioManifest = data.items;
-            isAudioManifestLoaded = true;
-            audioManifestLoadPromise = Promise.resolve();
-          } else if (data && typeof data === "object") {
-            audioManifest = data;
-            isAudioManifestLoaded = true;
-            audioManifestLoadPromise = Promise.resolve();
-          }
-        } catch (parseErr) {
-          console.warn("Failed to parse cached audio manifest:", parseErr);
+        const data = JSON.parse(cachedManifest);
+        if (data && typeof data === "object" && data.items && typeof data.items === "object") {
+          audioManifest = data.items;
+          isAudioManifestLoaded = true;
+          audioManifestLoadPromise = Promise.resolve();
+        } else if (data && typeof data === "object") {
+          audioManifest = data;
+          isAudioManifestLoaded = true;
+          audioManifestLoadPromise = Promise.resolve();
         }
       }
-    } catch (storageErr) {
-      console.info("sessionStorage access issue, continuing:", storageErr);
+    } catch (error) {
+      // ignore
     }
 
     const handleFirstInteraction = () => {
@@ -3415,9 +3324,7 @@
     if (!audioManifestLoadPromise) {
       audioManifestLoadPromise = isAudioManifestLoaded ? Promise.resolve() : loadAudioManifest();
     }
-    Promise.all([audioManifestLoadPromise, loadAnswerBank(), questionBankLoadPromise]).catch(() => {
-      // Errors are handled in individual load functions
-    });
+    Promise.all([audioManifestLoadPromise, loadAnswerBank(), questionBankLoadPromise]);
   </script>
 </body>
 </html>

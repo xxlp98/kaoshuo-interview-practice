@@ -1562,7 +1562,6 @@
     let currentRate = 1;
     let audioManifest = {};
     let currentAudio = null;
-    const audioElementCache = new Map();
     let audioManifestLoadPromise = null;
     let audioManifestLoadError = null;
     let isAudioManifestLoaded = false;
@@ -2433,30 +2432,6 @@
       return resolveAssetUrl(item[role] || "");
     }
 
-    function getOrCreateCachedAudio(audioPath) {
-      const existing = audioElementCache.get(audioPath);
-      if (existing) {
-        return existing;
-      }
-      const audio = new Audio(audioPath);
-      audio.preload = "auto";
-      audioElementCache.set(audioPath, audio);
-      return audio;
-    }
-
-    function preloadGeneratedAudio(questionId, role) {
-      const audioPath = getAudioPath(questionId, role);
-      if (!audioPath) {
-        return;
-      }
-      const audio = getOrCreateCachedAudio(audioPath);
-      try {
-        audio.load();
-      } catch (error) {
-        // ignore preload failures; playback will still attempt later
-      }
-    }
-
     async function ensureAudioManifestLoaded() {
       if (isAudioManifestLoaded) {
         return !audioManifestLoadError;
@@ -2474,9 +2449,9 @@
         return false;
       }
       stopAnyPlayback();
-      const audio = getOrCreateCachedAudio(audioPath);
+      const audio = new Audio(audioPath);
+      audio.preload = "auto";
       audio.playbackRate = currentRate;
-      audio.currentTime = 0;
       currentAudio = audio;
       audio.onplay = () => syncPauseButtonState();
       audio.onpause = () => syncPauseButtonState();
@@ -2506,9 +2481,9 @@
         return false;
       }
       stopAnyPlayback();
-      const audio = getOrCreateCachedAudio(audioPath);
+      const audio = new Audio(audioPath);
+      audio.preload = "auto";
       audio.playbackRate = currentRate;
-      audio.currentTime = 0;
       currentAudio = audio;
       audio.onplay = () => syncPauseButtonState();
       audio.onpause = () => syncPauseButtonState();
@@ -2556,7 +2531,6 @@
         await ensureAudioManifestLoaded();
         const localPath = getAudioPath(currentQuestion.id, role);
         if (localPath) {
-          preloadGeneratedAudio(currentQuestion.id, role);
           const played = await playGeneratedAudio(currentQuestion.id, role);
           if (played) {
             return;
@@ -3018,11 +2992,7 @@
       const remainingQuestions = topic.questions.filter((question) => !drawnInTopic.includes(question.id));
 
       if (!remainingQuestions.length) {
-        const topicName = topic.topic_title_cn
-          ? `${topic.topic_title_en} / ${topic.topic_title_cn}`
-          : topic.topic_title_en;
-        window.alert(`【${topicName}】该话题内的题目已全部抽完，接下来将为你切换到一个新话题。`);
-        console.info(`【${topic.topic_title_en}】该话题问题已抽取完，提示后自动抽取下一个话题。`);
+        console.info(`【${topic.topic_title_en}】该话题问题已抽取完，自动抽取下一个话题。`);
         drawTopicAndFirstQuestion({ autoSpeak });
         return;
       }
