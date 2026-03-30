@@ -757,5 +757,60 @@
     "order": 6,
     "question_en": "Why do you think you are qualified for this program?",
     "question_cn": "你为什么认为自己适合这个项目？"
+  },
+  {
+    "id": 5070,
+    "part": "all",
+    "topic_id": "topic-10-调剂组",
+    "topic_title_en": "调剂组",
+    "topic_title_cn": "调剂组",
+    "topic_order": 10,
+    "order": 1,
+    "question_en": "Why did you choose to transfer to our university?",
+    "question_cn": "你为什么选择调剂到我们学校？"
+  },
+  {
+    "id": 5071,
+    "part": "all",
+    "topic_id": "topic-10-调剂组",
+    "topic_title_en": "调剂组",
+    "topic_title_cn": "调剂组",
+    "topic_order": 10,
+    "order": 2,
+    "question_en": "How do you view the adjustment (transfer) process?",
+    "question_cn": "你如何看待调剂这个过程？"
+  },
+  {
+    "id": 5072,
+    "part": "all",
+    "topic_id": "topic-10-调剂组",
+    "topic_title_en": "调剂组",
+    "topic_title_cn": "调剂组",
+    "topic_order": 10,
+    "order": 3,
+    "question_en": "What are your expectations for the graduate program here?",
+    "question_cn": "你对这里的研究生项目有什么期望？"
+  },
+  {
+    "id": 5073,
+    "part": "all",
+    "topic_id": "topic-10-调剂组",
+    "topic_title_en": "调剂组",
+    "topic_title_cn": "调剂组",
+    "topic_order": 10,
+    "order": 4,
+    "question_en": "If you are admitted, how will you adapt to our university?",
+    "question_cn": "如果被录取，你将如何适应我们学校？"
+  },
+  {
+    "id": 5074,
+    "part": "all",
+    "topic_id": "topic-10-调剂组",
+    "topic_title_en": "调剂组",
+    "topic_title_cn": "调剂组",
+    "topic_order": 10,
+    "order": 5,
+    "question_en": "What if you don't get into any school through adjustment?",
+    "question_cn": "如果调剂没有成功，你会怎么办？"
   }
 ]
