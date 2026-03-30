@@ -2992,7 +2992,11 @@
       const remainingQuestions = topic.questions.filter((question) => !drawnInTopic.includes(question.id));
 
       if (!remainingQuestions.length) {
-        console.info(`【${topic.topic_title_en}】该话题问题已抽取完，自动抽取下一个话题。`);
+        const topicName = topic.topic_title_cn
+          ? `${topic.topic_title_en} / ${topic.topic_title_cn}`
+          : topic.topic_title_en;
+        window.alert(`【${topicName}】该话题内的题目已全部抽完，接下来将为你切换到一个新话题。`);
+        console.info(`【${topic.topic_title_en}】该话题问题已抽取完，提示后自动抽取下一个话题。`);
         drawTopicAndFirstQuestion({ autoSpeak });
         return;
       }
