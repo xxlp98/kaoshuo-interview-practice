@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import Dict, List
 
 import edge_tts
+from tqdm import tqdm
 
 TEXT_FIELDS = {
     "topic": "question_en",
@@ -160,6 +161,22 @@ async def generate_audio(args: argparse.Namespace) -> None:
     generated_count = 0
     skipped_count = 0
 
+    total_steps = 0
+    for question in questions:
+        question_id = str(question.get("id", "")).strip()
+        if not question_id:
+            continue
+        answer_item = answers.get(question_id, {})
+        for role, field_name in TEXT_FIELDS.items():
+            if role == "topic":
+                text = normalize_text(str(question.get(field_name, "")))
+            else:
+                text = normalize_text(str(answer_item.get(field_name, "") or question.get(field_name, "")))
+            if text:
+                total_steps += 1
+
+    progress = tqdm(total=total_steps, desc="Generating audio", unit="file")
+
     for question in questions:
         question_id = str(question.get("id", "")).strip()
         if not question_id:
@@ -177,12 +194,15 @@ async def generate_audio(args: argparse.Namespace) -> None:
             if not text:
                 continue
 
+            progress.set_postfix_str(f"id={question_id}/{role}")
+
             output_path = output_dir / question_id / f"{role}.mp3"
             rel_path = output_path.relative_to(project_root).as_posix()
             item_manifest[role] = rel_path
 
             if output_path.exists() and not args.force:
                 skipped_count += 1
+                progress.update(1)
                 continue
 
             await synthesize_to_file(
@@ -194,8 +214,11 @@ async def generate_audio(args: argparse.Namespace) -> None:
                 volume=args.volume,
             )
             generated_count += 1
+            progress.update(1)
 
         manifest["items"][question_id] = item_manifest
+
+    progress.close()
 
     manifest_path.parent.mkdir(parents=True, exist_ok=True)
     manifest_path.write_text(
