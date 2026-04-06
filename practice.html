@@ -733,6 +733,10 @@
 
     .history-backdrop {
       position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
       inset: 0;
       background: rgba(20, 24, 43, 0.25);
       z-index: 32;
@@ -744,6 +748,10 @@
 
     .fatal-error-overlay {
       position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
       inset: 0;
       z-index: 9999;
       background: linear-gradient(180deg, #f2f7f7 0%, #edf3f4 100%);
@@ -1424,6 +1432,29 @@
 
       if (!Array.from) {
         Array.from = function (arrayLike) {
+          if (arrayLike == null) {
+            throw new TypeError("Cannot convert undefined or null to object");
+          }
+          if (typeof Symbol !== "undefined" && Symbol.iterator) {
+            try {
+              var iterMethod = arrayLike[Symbol.iterator];
+              if (typeof iterMethod === "function") {
+                var out = [];
+                var it = iterMethod.call(arrayLike);
+                var step;
+                while (true) {
+                  step = it.next();
+                  if (step.done) {
+                    break;
+                  }
+                  out.push(step.value);
+                }
+                return out;
+              }
+            } catch (_iterErr) {
+              // fall through to array-like path
+            }
+          }
           return Array.prototype.slice.call(arrayLike);
         };
       }
@@ -1922,7 +1953,11 @@
         map.get(topicId).questions.push(item);
       });
 
-      return Array.from(map.values())
+      const topics = [];
+      map.forEach(function (value) {
+        topics.push(value);
+      });
+      return topics
         .sort((a, b) => a.topic_order - b.topic_order)
         .map((topic) =>
           Object.assign({}, topic, {
