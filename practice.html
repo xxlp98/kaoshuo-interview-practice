@@ -1562,7 +1562,6 @@
     let currentRate = 1;
     let audioManifest = {};
     let currentAudio = null;
-    const audioElementCache = new Map();
     let audioManifestLoadPromise = null;
     let audioManifestLoadError = null;
     let isAudioManifestLoaded = false;
@@ -2433,30 +2432,6 @@
       return resolveAssetUrl(item[role] || "");
     }
 
-    function getOrCreateCachedAudio(audioPath) {
-      const existing = audioElementCache.get(audioPath);
-      if (existing) {
-        return existing;
-      }
-      const audio = new Audio(audioPath);
-      audio.preload = "auto";
-      audioElementCache.set(audioPath, audio);
-      return audio;
-    }
-
-    function preloadGeneratedAudio(questionId, role) {
-      const audioPath = getAudioPath(questionId, role);
-      if (!audioPath) {
-        return;
-      }
-      const audio = getOrCreateCachedAudio(audioPath);
-      try {
-        audio.load();
-      } catch (error) {
-        // ignore preload failures; playback will still attempt later
-      }
-    }
-
     async function ensureAudioManifestLoaded() {
       if (isAudioManifestLoaded) {
         return !audioManifestLoadError;
@@ -2474,9 +2449,9 @@
         return false;
       }
       stopAnyPlayback();
-      const audio = getOrCreateCachedAudio(audioPath);
+      const audio = new Audio(audioPath);
+      audio.preload = "auto";
       audio.playbackRate = currentRate;
-      audio.currentTime = 0;
       currentAudio = audio;
       audio.onplay = () => syncPauseButtonState();
       audio.onpause = () => syncPauseButtonState();
@@ -2506,9 +2481,9 @@
         return false;
       }
       stopAnyPlayback();
-      const audio = getOrCreateCachedAudio(audioPath);
+      const audio = new Audio(audioPath);
+      audio.preload = "auto";
       audio.playbackRate = currentRate;
-      audio.currentTime = 0;
       currentAudio = audio;
       audio.onplay = () => syncPauseButtonState();
       audio.onpause = () => syncPauseButtonState();
@@ -2556,7 +2531,6 @@
         await ensureAudioManifestLoaded();
         const localPath = getAudioPath(currentQuestion.id, role);
         if (localPath) {
-          preloadGeneratedAudio(currentQuestion.id, role);
           const played = await playGeneratedAudio(currentQuestion.id, role);
           if (played) {
             return;
