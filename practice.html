@@ -1357,6 +1357,155 @@
   </section>
 
   <script>
+    (function () {
+      if (typeof Object.assign !== "function") {
+        Object.assign = function (target) {
+          if (target == null) {
+            throw new TypeError("Cannot convert undefined or null to object");
+          }
+          var to = Object(target);
+          for (var i = 1; i < arguments.length; i += 1) {
+            var source = arguments[i];
+            if (source == null) {
+              continue;
+            }
+            for (var key in source) {
+              if (Object.prototype.hasOwnProperty.call(source, key)) {
+                to[key] = source[key];
+              }
+            }
+          }
+          return to;
+        };
+      }
+
+      if (!Array.prototype.find) {
+        Array.prototype.find = function (predicate) {
+          if (this == null) {
+            throw new TypeError("Array.prototype.find called on null or undefined");
+          }
+          if (typeof predicate !== "function") {
+            throw new TypeError("predicate must be a function");
+          }
+          var list = Object(this);
+          var length = list.length >>> 0;
+          for (var i = 0; i < length; i += 1) {
+            var value = list[i];
+            if (predicate.call(arguments[1], value, i, list)) {
+              return value;
+            }
+          }
+          return undefined;
+        };
+      }
+
+      if (!Array.prototype.includes) {
+        Array.prototype.includes = function (searchElement) {
+          if (this == null) {
+            throw new TypeError("Array.prototype.includes called on null or undefined");
+          }
+          var list = Object(this);
+          var length = list.length >>> 0;
+          if (length === 0) {
+            return false;
+          }
+          var start = arguments[1] | 0;
+          var i = Math.max(start >= 0 ? start : length - Math.abs(start), 0);
+          while (i < length) {
+            var current = list[i];
+            if (current === searchElement || (current !== current && searchElement !== searchElement)) {
+              return true;
+            }
+            i += 1;
+          }
+          return false;
+        };
+      }
+
+      if (!Array.from) {
+        Array.from = function (arrayLike) {
+          return Array.prototype.slice.call(arrayLike);
+        };
+      }
+
+      if (!Object.entries) {
+        Object.entries = function (obj) {
+          var ownProps = Object.keys(obj);
+          var result = new Array(ownProps.length);
+          for (var i = 0; i < ownProps.length; i += 1) {
+            result[i] = [ownProps[i], obj[ownProps[i]]];
+          }
+          return result;
+        };
+      }
+
+      if (!Number.isFinite) {
+        Number.isFinite = function (value) {
+          return typeof value === "number" && isFinite(value);
+        };
+      }
+
+      if (typeof Element !== "undefined") {
+        if (!Element.prototype.matches) {
+          Element.prototype.matches =
+            Element.prototype.msMatchesSelector ||
+            Element.prototype.webkitMatchesSelector ||
+            function (selector) {
+              var nodeList = (this.document || this.ownerDocument).querySelectorAll(selector);
+              var i = 0;
+              while (nodeList[i] && nodeList[i] !== this) {
+                i += 1;
+              }
+              return Boolean(nodeList[i]);
+            };
+        }
+
+        if (!Element.prototype.closest) {
+          Element.prototype.closest = function (selector) {
+            var element = this;
+            while (element && element.nodeType === 1) {
+              if (element.matches(selector)) {
+                return element;
+              }
+              element = element.parentElement || element.parentNode;
+            }
+            return null;
+          };
+        }
+      }
+
+      if (typeof Promise !== "undefined" && !Promise.prototype.finally) {
+        Promise.prototype.finally = function (onFinally) {
+          var P = this.constructor;
+          return this.then(
+            function (value) {
+              return P.resolve(onFinally && onFinally()).then(function () {
+                return value;
+              });
+            },
+            function (reason) {
+              return P.resolve(onFinally && onFinally()).then(function () {
+                throw reason;
+              });
+            }
+          );
+        };
+      }
+
+      if (typeof window.CustomEvent !== "function") {
+        function CustomEvent(event, params) {
+          params = params || { bubbles: false, cancelable: false, detail: null };
+          var evt = document.createEvent("CustomEvent");
+          evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+          return evt;
+        }
+        CustomEvent.prototype = window.Event ? window.Event.prototype : {};
+        window.CustomEvent = CustomEvent;
+      }
+    })();
+  </script>
+
+  <script>
     const fatalErrorOverlay = document.getElementById("fatalErrorOverlay");
     const fatalErrorText = document.getElementById("fatalErrorText");
     const ERROR_REPORT_ENDPOINT = "/.netlify/functions/report-client-error";
@@ -1470,21 +1619,124 @@
       showFatalError(event.reason);
     });
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const hostname = (window.location.hostname || "").toLowerCase();
-    const isBranchDeployHost = hostname.includes("--");
-    const isLikelyTestHost = /(^|\.)(test|staging|dev|preview)\b/i.test(hostname) || isBranchDeployHost;
-    const cdnSwitch = urlParams.get("cdn");
-    const shouldUseCdn = cdnSwitch === "1" || (cdnSwitch !== "0" && isLikelyTestHost);
-    const CDN_BRANCH = urlParams.get("cdnBranch") || "staging";
+    function parseSearchParamsObject(search) {
+      const output = {};
+      const raw = String(search || "").replace(/^\?/, "");
+      if (!raw) {
+        return output;
+      }
+      raw.split("&").forEach((pair) => {
+        if (!pair) {
+          return;
+        }
+        const index = pair.indexOf("=");
+        const keyRaw = index >= 0 ? pair.slice(0, index) : pair;
+        const valueRaw = index >= 0 ? pair.slice(index + 1) : "";
+        const key = decodeURIComponent(keyRaw.replace(/\+/g, "%20"));
+        if (!key || Object.prototype.hasOwnProperty.call(output, key)) {
+          return;
+        }
+        output[key] = decodeURIComponent(valueRaw.replace(/\+/g, "%20"));
+      });
+      return output;
+    }
+
+    function getSearchParam(name, fallbackParams) {
+      if (typeof URLSearchParams === "function") {
+        try {
+          return new URLSearchParams(window.location.search).get(name);
+        } catch (_error) {
+          // ignore and fallback
+        }
+      }
+      const map = fallbackParams || parseSearchParamsObject(window.location.search);
+      return Object.prototype.hasOwnProperty.call(map, name) ? map[name] : null;
+    }
+
+    function toSearchString(params) {
+      return Object.keys(params || {})
+        .filter((key) => {
+          const value = params[key];
+          return value !== undefined && value !== null && value !== "";
+        })
+        .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(String(params[key]))}`)
+        .join("&");
+    }
+
+    function fetchJsonViaXhr(url) {
+      return new Promise((resolve, reject) => {
+        if (typeof XMLHttpRequest !== "function") {
+          reject(new Error("XMLHttpRequest unavailable"));
+          return;
+        }
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", url, true);
+        xhr.onreadystatechange = () => {
+          if (xhr.readyState !== 4) {
+            return;
+          }
+          if (xhr.status >= 200 && xhr.status < 300) {
+            try {
+              resolve(JSON.parse(xhr.responseText));
+            } catch (error) {
+              reject(error);
+            }
+            return;
+          }
+          reject(new Error(`HTTP ${xhr.status} for ${url}`));
+        };
+        xhr.onerror = () => reject(new Error(`Network error for ${url}`));
+        xhr.send();
+      });
+    }
+
+    const initialSearchParams = parseSearchParamsObject(window.location.search);
+    const cdnSwitch = getSearchParam("cdn", initialSearchParams);
+    const shouldUseCdn = cdnSwitch === "1";
+    const CDN_BRANCH = getSearchParam("cdnBranch", initialSearchParams) || "staging";
     const CDN_BASE = `https://cdn.jsdelivr.net/gh/xxlp98/kaoshuo-interview-practice@${encodeURIComponent(CDN_BRANCH)}`;
 
-    function buildDataUrl(relativePath) {
+    function buildDataCandidates(relativePath) {
       const normalized = String(relativePath || "").replace(/^\.?\//, "");
-      if (!shouldUseCdn) {
-        return `./${normalized}`;
+      const candidates = [`./${normalized}`];
+      if (shouldUseCdn) {
+        candidates.push(`${CDN_BASE}/${normalized}`);
       }
-      return `${CDN_BASE}/${normalized}`;
+      return candidates;
+    }
+
+    async function fetchJsonWithFallback(relativePath) {
+      const candidates = buildDataCandidates(relativePath);
+      let lastError = null;
+
+      for (const url of candidates) {
+        try {
+          if (typeof fetch === "function") {
+            let response;
+            try {
+              response = await fetch(url, { cache: "no-store" });
+            } catch (_e) {
+              response = await fetch(url);
+            }
+            if (!response.ok) {
+              throw new Error(`HTTP ${response.status} for ${url}`);
+            }
+            return await response.json();
+          }
+          return await fetchJsonViaXhr(url);
+        } catch (error) {
+          try {
+            if (typeof fetch !== "function" && typeof XMLHttpRequest === "function") {
+              return await fetchJsonViaXhr(url);
+            }
+          } catch (_xhrError) {
+            // ignore and keep last error
+          }
+          lastError = error;
+        }
+      }
+
+      throw lastError || new Error(`Failed to load ${relativePath}`);
     }
 
     function resolveAssetUrl(path) {
@@ -1502,11 +1754,8 @@
       return `./${normalized}`;
     }
 
-    const QUESTION_BANK_PATH = buildDataUrl("question-bank.json");
-    const ANSWER_BANK_PATH = buildDataUrl("answer-bank.json");
-    const AUDIO_MANIFEST_PATH = buildDataUrl("audio-manifest.json");
     const AUDIO_MANIFEST_CACHE_KEY = "exam-audio-manifest-cache-v1";
-    const shouldAutoStart = urlParams.get("autostart") === "1";
+    const shouldAutoStart = getSearchParam("autostart", initialSearchParams) === "1";
     const INTEGRATED_BANK_KEY = "all";
     const PARTS = [INTEGRATED_BANK_KEY];
     const PART_LABELS = {
@@ -1760,12 +2009,12 @@
       if (!window.history.replaceState) {
         return;
       }
-      const params = new URLSearchParams(window.location.search);
-      params.delete("part");
+      const params = parseSearchParamsObject(window.location.search);
+      delete params.part;
       if (removeAutoStart) {
-        params.delete("autostart");
+        delete params.autostart;
       }
-      const query = params.toString();
+      const query = toSearchString(params);
       window.history.replaceState({}, document.title, query ? `${window.location.pathname}?${query}` : window.location.pathname);
     }
 
@@ -3039,16 +3288,7 @@
       isQuestionBankLoaded = false;
       questionBankLoadError = null;
       try {
-        let response;
-        try {
-          response = await fetch(QUESTION_BANK_PATH, { cache: "no-store" });
-        } catch (_e) {
-          response = await fetch(QUESTION_BANK_PATH);
-        }
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-        const data = await response.json();
+        const data = await fetchJsonWithFallback("question-bank.json");
         if (!Array.isArray(data) || !data.length) {
           throw new Error("Invalid question bank format");
         }
@@ -3093,17 +3333,7 @@
 
     async function loadAnswerBank() {
       try {
-        let response;
-        try {
-          response = await fetch(ANSWER_BANK_PATH, { cache: "no-store" });
-        } catch (_e) {
-          response = await fetch(ANSWER_BANK_PATH);
-        }
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-
-        const data = await response.json();
+        const data = await fetchJsonWithFallback("answer-bank.json");
         let list = [];
 
         if (Array.isArray(data)) {
@@ -3140,16 +3370,7 @@
       isAudioManifestLoaded = false;
       audioManifestLoadError = null;
       try {
-        let response;
-        try {
-          response = await fetch(AUDIO_MANIFEST_PATH, { cache: "no-store" });
-        } catch (_e) {
-          response = await fetch(AUDIO_MANIFEST_PATH);
-        }
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-        const data = await response.json();
+        const data = await fetchJsonWithFallback("audio-manifest.json");
         if (data && typeof data === "object" && data.items && typeof data.items === "object") {
           audioManifest = data.items;
           return;
