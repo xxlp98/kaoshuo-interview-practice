@@ -719,12 +719,7 @@
       for (const url of candidates) {
         try {
           if (typeof fetch === "function") {
-            let response;
-            try {
-              response = await fetch(url, { cache: "no-store" });
-            } catch (_e) {
-              response = await fetch(url);
-            }
+            const response = await fetch(url);
             if (!response.ok) {
               throw new Error(`HTTP ${response.status} for ${url}`);
             }

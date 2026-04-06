@@ -1712,12 +1712,7 @@
       for (const url of candidates) {
         try {
           if (typeof fetch === "function") {
-            let response;
-            try {
-              response = await fetch(url, { cache: "no-store" });
-            } catch (_e) {
-              response = await fetch(url);
-            }
+            const response = await fetch(url);
             if (!response.ok) {
               throw new Error(`HTTP ${response.status} for ${url}`);
             }
@@ -1927,12 +1922,13 @@
         map.get(topicId).questions.push(item);
       });
 
-      return [...map.values()]
+      return Array.from(map.values())
         .sort((a, b) => a.topic_order - b.topic_order)
-        .map((topic) => ({
-          ...topic,
-          questions: [...topic.questions].sort((a, b) => a.order - b.order)
-        }));
+        .map((topic) =>
+          Object.assign({}, topic, {
+            questions: topic.questions.slice().sort((a, b) => a.order - b.order)
+          })
+        );
     }
 
     function getTopicById(topicId, partKey = activePart) {
@@ -3341,10 +3337,9 @@
         } else if (data && typeof data === "object" && Array.isArray(data.items)) {
           list = data.items;
         } else if (data && typeof data === "object") {
-          list = Object.entries(data).map(([id, item]) => ({
-            id: Number(id),
-            ...(item || {})
-          }));
+          list = Object.entries(data).map(([id, item]) =>
+            Object.assign({ id: Number(id) }, item || {})
+          );
         }
 
         answerBank = list.reduce((acc, item) => {
